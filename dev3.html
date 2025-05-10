@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admission Tracker</title>
+
+  <!-- Tailwind CSS via CLI (Recommended for Production) -->
+   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css "/>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- jsPDF & AutoTable for PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js "></script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-500">
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl flex items-center space-x-4">
+    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+    <span class="text-lg font-medium">Processing...</span>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="backdrop-blur-md bg-white/70 dark:bg-gray-900/70 py-6 shadow-xl sticky top-0 z-10">
+  <div class="container mx-auto px-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500">
+      Admission Tracker
+    </h1>
+    <button onclick="toggleDarkMode()"
+            class="w-12 h-6 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer">
+      <div id="darkThumb"
+           class="bg-white dark:bg-yellow-400 w-5 h-5 rounded-full shadow-md transform transition-transform duration-300"></div>
+    </button>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 py-6 space-y-6">
+
+  <!-- Dashboard Summary -->
+  <section class="grid grid-cols-1 md:grid-cols-6 gap-4">
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500 dark:text-gray-400">Total Students</h3>
+      <p id="totalStudents" class="text-2xl font-bold">0</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500 dark:text-gray-400">Called</h3>
+      <p id="calledCount" class="text-2xl font-bold">0</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500 dark:text-gray-400">Followed Up</h3>
+      <p id="followedUpCount" class="text-2xl font-bold">0</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500 dark:text-gray-400">Agreed</h3>
+      <p id="agreedCount" class="text-2xl font-bold">0</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500 dark:text-gray-400">Paid</h3>
+      <p id="paidCount" class="text-2xl font-bold">0</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="text-sm text-gray-500 dark:text-gray-400">Not Interested</h3>
+      <p id="notInterestedCount" class="text-2xl font-bold">0</p>
+    </div>
+  </section>
+
+  <!-- Search & Filter -->
+  <section class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-4 sticky top-20 z-10">
+    <h2 class="text-xl font-semibold mb-4">Search & Filters</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <input type="text" id="searchInput" placeholder="Search by name, phone..."
+             class="border p-2 rounded focus:ring focus:outline-none dark:bg-gray-700 dark:border-gray-600"/>
+      <select id="statusFilter"
+              class="border p-2 rounded focus:ring focus:outline-none dark:bg-gray-700 dark:border-gray-600">
+        <option value="">All Statuses</option>
+        <option value="Called">Called</option>
+        <option value="Followed Up">Followed Up</option>
+        <option value="Agreed">Agreed</option>
+        <option value="Paid">Paid</option>
+        <option value="Not Interested">Not Interested</option>
+      </select>
+      <select id="classFilter"
+              class="border p-2 rounded focus:ring focus:outline-none dark:bg-gray-700 dark:border-gray-600">
+        <option value="">All Classes</option>
+        <option value="6">Class 6</option>
+        <option value="7">Class 7</option>
+        <option value="8">Class 8</option>
+        <option value="9">Class 9</option>
+        <option value="10">Class 10</option>
+        <option value="11">Class 11</option>
+        <option value="12">Class 12</option>
+      </select>
+      <select id="groupFilter"
+              class="border p-2 rounded focus:ring focus:outline-none dark:bg-gray-700 dark:border-gray-600">
+        <option value="">All Groups</option>
+        <option value="General">General</option>
+        <option value="Science">Science</option>
+        <option value="Arts">Arts</option>
+        <option value="Commerce">Commerce</option>
+      </select>
+    </div>
+    <div class="flex justify-between items-center">
+      <div class="text-sm text-gray-600 dark:text-gray-400">
+        Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> students
+      </div>
+      <div class="flex space-x-2">
+        <button onclick="prevPage()" id="prevPage"
+                class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 disabled:opacity-50">
+          Previous
+        </button>
+        <span id="pageInfo" class="px-2 py-1"></span>
+        <button onclick="nextPage()" id="nextPage"
+                class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 disabled:opacity-50">
+          Next
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add Student Button -->
+  <button onclick="openAddModal()" class="float-right px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">+ Add Student</button>
+
+  <!-- Student List -->
+  <section id="studentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"></section>
+
+  <!-- Charts -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <canvas id="statusChart" height="100" class="w-full h-64"></canvas>
+    <canvas id="classChart" height="100" class="w-full h-64"></canvas>
+  </section>
+
+  <!-- Backup, Export, Restore & Import Section -->
+  <section class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-4">
+    <h2 class="text-xl font-semibold mb-2">Backup & Import</h2>
+    <div class="flex flex-wrap gap-4">
+      <button onclick="backupJSON()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition">
+        Backup JSON
+      </button>
+      <label class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-500 cursor-pointer transition">
+        Restore JSON
+        <input type="file" id="restoreJSONInput" accept=".json" class="hidden" onchange="restoreFromJSON(event)" />
+      </label>
+      <label class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 cursor-pointer transition">
+        Import CSV
+        <input type="file" id="importCSVInput" accept=".csv" class="hidden" onchange="importFromCSV(event)" />
+      </label>
+      <button onclick="exportToCSV()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition">
+        Export CSV
+      </button>
+      <button onclick="exportToPDF()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition">
+        Export PDF
+      </button>
+    </div>
+  </section>
+
+  <!-- Toast Notification -->
+  <div id="toast"
+       class="fixed bottom-4 right-4 hidden bg-green-600 text-white px-4 py-2 rounded shadow">Saved!</div>
+
+  <!-- Add/Edit Modal -->
+  <div id="addModal"
+       class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md shadow-lg">
+      <h2 id="modalTitle" class="text-xl font-bold mb-4">Add Student</h2>
+      <form id="studentForm" class="space-y-4">
+        <input type="text" id="name" placeholder="Name"
+               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required/>
+        <input type="text" id="phone" placeholder="Phone"
+               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required/>
+        <select id="class"
+                class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
+          <option value="">Select Class</option>
+          <option value="6">Class 6</option>
+          <option value="7">Class 7</option>
+          <option value="8">Class 8</option>
+          <option value="9">Class 9</option>
+          <option value="10">Class 10</option>
+          <option value="11">Class 11</option>
+          <option value="12">Class 12</option>
+        </select>
+        <select id="group"
+                class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+          <option value="">Select Group</option>
+          <option value="General">General</option>
+          <option value="Science">Science</option>
+          <option value="Arts">Arts</option>
+          <option value="Commerce">Commerce</option>
+        </select>
+        <input type="date" id="date"
+               class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required/>
+        <select id="status"
+                class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+          <option value="Called">Called</option>
+          <option value="Followed Up">Followed Up</option>
+          <option value="Agreed">Agreed</option>
+          <option value="Paid">Paid</option>
+          <option value="Not Interested">Not Interested</option>
+        </select>
+        <textarea id="info" placeholder="Optional Notes..."
+                  class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"></textarea>
+        <div class="flex justify-end space-x-2">
+          <button type="button" onclick="closeModal()"
+                  class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+            Cancel
+          </button>
+          <button type="submit"
+                  class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal"
+       class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">Confirm Deletion</h2>
+      <p class="mb-6">Are you sure you want to delete this student? This action cannot be undone.</p>
+      <div class="flex justify-end gap-4">
+        <button onclick="cancelDelete()"
+                class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+          Cancel
+        </button>
+        <button onclick="confirmDelete()"
+                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition">Delete</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+     const supabaseUrl = 'https://erihbeinkymnymncnawm.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaWhiZWlua3ltbnltbmNuYXdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzEwMzUsImV4cCI6MjA2MjM0NzAzNX0.xhE0_RbBQ9qQcYHa5sv-S9-cUolJruo0Km3oud-GtOM';
+      const supabaseMain = supabase.createClient(supabaseUrl, supabaseKey);
+
+  let students = [];
+  let currentPage = 1;
+  let totalPages = 1;
+  let editingId = null;
+  let deletingId = null;
+
+  // Initialize charts
+  let statusChart = null;
+  let classChart = null;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchStudents();
+    setupEventListeners();
+    initDarkMode();
+  });
+
+  async function fetchStudents() {
+    showLoading();
+    try {
+      const { data, error } = await supabaseMain.from("studentsdemo").select("*");
+      if (!error) students = data || [];
+      else throw new Error('Supabase Fetch Failed');
+    } catch (err) {
+      console.error(err);
+      students = JSON.parse(localStorage.getItem("studentsdemo")) || [];
+    }
+    hideLoading();
+    renderStudents();
+    updateDashboard();
+    updateCharts();
+  }
+
+  function setupEventListeners() {
+    document.getElementById("studentForm").addEventListener("submit", saveStudent);
+    document.getElementById("searchInput").addEventListener("input", debounce(renderStudents, 300));
+    document.getElementById("statusFilter").addEventListener("change", renderStudents);
+    document.getElementById("classFilter").addEventListener("change", renderStudents);
+    document.getElementById("groupFilter").addEventListener("change", renderStudents);
+  }
+
+  function openAddModal(student = null) {
+    editingId = student?.id || null;
+    document.getElementById("modalTitle").textContent = student ? "Edit Student" : "Add Student";
+    document.getElementById("name").value = student?.name || "";
+    document.getElementById("phone").value = student?.phone || "";
+    document.getElementById("class").value = student?.class || "";
+    document.getElementById("group").value = student?.group || "";
+    document.getElementById("date").value = student?.date || "";
+    document.getElementById("status").value = student?.status || "Called";
+    document.getElementById("info").value = student?.info || "";
+    document.getElementById("addModal").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("addModal").classList.add("hidden");
+  }
+
+  async function saveStudent(e) {
+    e.preventDefault();
+    const student = {
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      class: document.getElementById("class").value,
+      group: document.getElementById("group").value,
+      date: document.getElementById("date").value,
+      status: document.getElementById("status").value,
+      info: document.getElementById("info").value
+    };
+
+    if (!student.name || !student.phone || !student.class || !student.date || !student.status) {
+      showToast("Please fill all required fields!", "error");
+      return;
+    }
+
+    if (!/^[\d]{10,15}$/.test(student.phone)) {
+      showToast("Invalid phone number", "error");
+      return;
+    }
+
+    if (editingId) {
+      await supabaseMain.from("studentsdemo").update(student).eq("id", editingId);
+      showToast("Updated!");
+    } else {
+      const { data, error } = await supabaseMain.from("studentsdemo").insert([student]).select();
+      if (!error && data.length > 0) student.id = data[0].id;
+      showToast("Created!");
+    }
+
+    closeModal();
+    fetchStudents();
+  }
+
+  function deleteStudent(id) {
+    deletingId = id;
+    document.getElementById("deleteModal").classList.remove("hidden");
+  }
+
+  async function confirmDelete() {
+    if (deletingId) {
+      await supabaseMain.from("studentsdemo").delete().eq("id", deletingId);
+      fetchStudents();
+      cancelDelete();
+    }
+  }
+
+  function cancelDelete() {
+    document.getElementById("deleteModal").classList.add("hidden");
+    deletingId = null;
+  }
+
+  function renderStudents() {
+    const search = document.getElementById("searchInput")?.value.toLowerCase() || "";
+    const status = document.getElementById("statusFilter")?.value || "";
+    const cls = document.getElementById("classFilter")?.value || "";
+    const group = document.getElementById("groupFilter")?.value || "";
+
+    const filtered = students.filter(s =>
+      (!search ||
+       s.name?.toLowerCase().includes(search) ||
+       s.phone.includes(search) ||
+       s.group?.toLowerCase().includes(search)) &&
+      (!status || s.status === status) &&
+      (!cls || s.class === cls) &&
+      (!group || s.group === group)
+    );
+
+    totalPages = Math.ceil(filtered.length / 10);
+    const start = (currentPage - 1) * 10;
+    const paginated = filtered.slice(start, start + 10);
+
+    const list = document.getElementById("studentList");
+    list.innerHTML = "";
+
+    if (paginated.length === 0) {
+      list.innerHTML = `
+        <div class="col-span-full text-center py-10">
+          <i class="fas fa-user-graduate text-4xl text-gray-400 mb-4"></i>
+          <p>No students found matching your filters.</p>
+        </div>`;
+      return;
+    }
+
+    paginated.forEach((s) => {
+      list.innerHTML += `
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow border-l-4 border-${getStatusColor(s.status)}">
+          <h3 class="font-bold">${s.name}</h3>
+          <p>Phone: ${s.phone}</p>
+          <p>Status: <span class="ml-2">${getIconByStatus(s.status)} ${s.status}</span></p>
+          <div class="mt-2 flex space-x-2">
+            <a href="tel:${s.phone}" class="text-green-600"><i class="fas fa-phone-alt"></i> Call</a>
+            <button onclick="openAddModal(${JSON.stringify(s)})" class="text-blue-600">Edit</button>
+            <button onclick="deleteStudent('${s.id}')" class="text-red-600">Delete</button>
+          </div>
+        </div>`;
+    });
+
+    document.getElementById("showingCount").textContent = paginated.length;
+    document.getElementById("totalCount").textContent = students.length;
+    updatePagination();
+  }
+
+  function getStatusColor(status) {
+    switch (status) {
+      case "Paid": return "green-500";
+      case "Agreed": return "blue-500";
+      case "Followed Up": return "yellow-500";
+      case "Called": return "purple-500";
+      default: return "red-500";
+    }
+  }
+
+  function getIconByStatus(status) {
+    switch (status) {
+      case "Paid": return '<i class="fas fa-check-circle text-green-500"></i>';
+      case "Agreed": return '<i class="fas fa-handshake text-blue-500"></i>';
+      case "Followed Up": return '<i class="fas fa-exclamation-triangle text-yellow-500"></i>';
+      case "Called": return '<i class="fas fa-phone text-purple-500"></i>';
+      default: return '<i class="fas fa-ban text-red-500"></i>';
+    }
+  }
+
+  function updatePagination() {
+    const pageInfo = document.getElementById("pageInfo");
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById("prevPage").disabled = currentPage === 1;
+    document.getElementById("nextPage").disabled = currentPage === totalPages;
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      renderStudents();
+    }
+  }
+
+  function nextPage() {
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderStudents();
+    }
+  }
+
+  function resetFilters() {
+    document.getElementById("searchInput").value = "";
+    document.getElementById("statusFilter").value = "";
+    document.getElementById("classFilter").value = "";
+    document.getElementById("groupFilter").value = "";
+    currentPage = 1;
+    renderStudents();
+  }
+
+  function updateDashboard() {
+    document.getElementById("totalStudents").textContent = students.length;
+    document.getElementById("calledCount").textContent = students.filter(s => s.status === "Called").length;
+    document.getElementById("followedUpCount").textContent = students.filter(s => s.status === "Followed Up").length;
+    document.getElementById("agreedCount").textContent = students.filter(s => s.status === "Agreed").length;
+    document.getElementById("paidCount").textContent = students.filter(s => s.status === "Paid").length;
+    document.getElementById("notInterestedCount").textContent = students.filter(s => s.status === "Not Interested").length;
+  }
+
+  function updateCharts() {
+    const statusCounts = {};
+    const classCounts = {};
+
+    students.forEach(s => {
+      statusCounts[s.status] = (statusCounts[s.status] || 0) + 1;
+      classCounts[s.class] = (classCounts[s.class] || 0) + 1;
+    });
+
+    // Destroy existing charts before re-initializing
+    if (window.statusChart) window.statusChart.destroy();
+    if (window.classChart) window.classChart.destroy();
+
+    // Pie Chart
+    window.statusChart = new Chart(document.getElementById("statusChart"), {
+      type: "pie",
+      data: {
+        labels: Object.keys(statusCounts),
+        datasets: [{
+          data: Object.values(statusCounts),
+          backgroundColor: ['#3B82F6', '#F59E0B', '#10B981', '#EF4444', '#6366F1']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Bar Chart
+    window.classChart = new Chart(document.getElementById("classChart"), {
+      type: "bar",
+      data: {
+        labels: Object.keys(classCounts),
+        datasets: [{ label: "Students per Class", data: Object.values(classCounts), backgroundColor: "#10B981" }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  function toggleDarkMode() {
+    document.documentElement.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.documentElement.classList.contains("dark"));
+    document.getElementById("darkThumb").classList.toggle("translate-x-6");
+    updateCharts(); // Refresh chart colors
+  }
+
+  function initDarkMode() {
+    if (localStorage.getItem("darkMode") === "true") {
+      document.documentElement.classList.add("dark");
+      document.getElementById("darkThumb").classList.add("translate-x-6");
+    }
+  }
+
+  function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    toast.className = `fixed bottom-4 right-4 ${type === "error" ? "bg-red-600" : "bg-green-600"} text-white px-4 py-2 rounded shadow ${type === "error" ? "animate-pulse" : ""}`;
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 3000);
+  }
+
+  function showLoading() {
+    const loading = document.getElementById("loadingOverlay");
+    if (loading) loading.classList.remove("hidden");
+  }
+
+  function hideLoading() {
+    const loading = document.getElementById("loadingOverlay");
+    if (loading) loading.classList.add("hidden");
+  }
+
+  function debounce(fn, delay) {
+    let timeout;
+    return function () {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, arguments), delay);
+    };
+  }
+
+  // Backup JSON
+  function backupJSON() {
+    const blob = new Blob([JSON.stringify(students, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "students-backup.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("Backup Created!");
+  }
+
+  // Restore JSON
+  function restoreFromJSON(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        students = JSON.parse(event.target.result);
+        localStorage.setItem("studentsdemo", JSON.stringify(students));
+        fetchStudents();
+        showToast("Data Restored!");
+      } catch (e) {
+        showToast("Invalid JSON File!", "error");
+      }
+    };
+    if (file) reader.readAsText(file);
+  }
+
+  // Export CSV
+  function exportToCSV() {
+    const csvRows = [
+      ["Name", "Phone", "Class", "Group", "Date", "Status"].join(","),
+      ...students.map(s => [s.name, s.phone, s.class, s.group, s.date, s.status].map(v => `"${v}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvRows], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "students.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("CSV exported!");
+  }
+
+  // Import CSV
+  function importFromCSV(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const lines = event.target.result.split("\n").slice(1);
+      const imported = lines.map(line => {
+        const [name, phone, cls, group, date, status] = line.split(",");
+        return { name, phone, class: cls, group, date, status };
+      }).filter(s => s.name && s.phone);
+
+      students.push(...imported);
+      localStorage.setItem("studentsdemo", JSON.stringify(students));
+      fetchStudents();
+      showToast(`Imported ${imported.length} students`);
+    };
+    if (file) reader.readAsText(file);
+  }
+
+  // Export PDF
+  function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const tableData = students.map((s, i) => [i + 1, s.name, s.phone, s.class, s.group, s.status]);
+    doc.autoTable({
+      head: [["#", "Name", "Phone", "Class", "Group", "Status"]],
+      body: tableData
+    });
+    doc.save("students.pdf");
+    showToast("PDF exported!");
+  }
+
+</script>
+</body>
+</html>
