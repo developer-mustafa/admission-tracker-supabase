@@ -7,16 +7,10 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config ={
-      darkMode:'class'
+    tailwind.config = {
+      darkMode: 'class'
     }
-
-    
   </script>
-
-<style>
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
-</style>
   <!-- jsPDF for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -26,6 +20,38 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    .filter-transition {
+      transition: all 0.3s ease-in-out;
+      max-height: 0;
+      overflow: hidden;
+    }
+    .filter-transition.active {
+      max-height: 500px;
+    }
+    .card-hover {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printSection, #printSection * {
+        visibility: visible;
+      }
+      #printSection {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-500">
   <!-- Loading overlay -->
@@ -128,12 +154,23 @@
     </section>
 
     <!-- Search & Filters Section -->
-    <section id="filterSection" class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-200 dark:border-gray-700 md:sticky md:top-4 z-20">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2">
+    <section id="filterSection" class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700 ">
 
-        <input id="searchInput" type="text" placeholder="Search students" 
-          class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 md:col-span-1">
-        
+      <!-- Mobile Search + Toggle -->
+      <div class="md:hidden flex justify-between items-center mb-4">
+        <input id="searchInputMobile" type="text" placeholder="Search students..." 
+          class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 w-full">
+        <button id="filterToggle" class="ml-2 p-3 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+          <i id="filterIcon" class="fas fa-filter"></i>
+        </button>
+      </div>
+      
+      <!-- Desktop Search -->
+      <input id="searchInputDesktop" type="text" placeholder="Search students..." 
+        class="hidden md:block p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 w-full mb-4">
+      
+      <!-- Filter Controls -->
+      <div id="filterControls" class="filter-transition md:grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <select id="statusFilter" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
           <option value="">All Statuses</option>
           <option value="Not Checked">Not Checked</option>
@@ -353,6 +390,9 @@
     </div>
   </div>
 
+  <!-- Hidden div for PDF printing -->
+  <div id="printSection" style="display: none;"></div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // ================ INITIALIZATION ================
@@ -381,7 +421,8 @@
       const modalTitle = document.getElementById('modalTitle');
       const studentForm = document.getElementById('studentForm');
       const studentList = document.getElementById('studentList');
-      const searchInput = document.getElementById('searchInput');
+      const searchInputMobile = document.getElementById('searchInputMobile');
+      const searchInputDesktop = document.getElementById('searchInputDesktop');
       const statusFilter = document.getElementById('statusFilter');
       const classFilter = document.getElementById('classFilter');
       const groupFilter = document.getElementById('groupFilter');
@@ -404,6 +445,10 @@
       const toggleThumb = document.getElementById('toggleThumb');
       const toggleIcon = document.getElementById('toggleIcon');
       const filterSection = document.getElementById('filterSection');
+      const filterToggle = document.getElementById('filterToggle');
+      const filterControls = document.getElementById('filterControls');
+      const filterIcon = document.getElementById('filterIcon');
+      const printSection = document.getElementById('printSection');
 
       // Dashboard Elements
       const dashboardElements = {
@@ -415,47 +460,51 @@
         paid: document.getElementById('paidStudents')
       };
 
-
-// Status Configuration - Updated for card backgrounds
-const statusConfig = {
-  "Not Checked": {
-    icon: '<i class="fas fa-question-circle mr-1"></i>',
-    bg: 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800',
-    text: 'text-gray-800 dark:text-gray-200',
-    iconColor: 'text-gray-500 dark:text-gray-400'
-  },
-  "Called": {
-    icon: '<i class="fas fa-phone-alt mr-1"></i>',
-    bg: 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-800 dark:to-purple-900',
-    text: 'text-purple-800 dark:text-purple-100',
-    iconColor: 'text-purple-500 dark:text-purple-300'
-  },
-  "Follow-Up Needed": {
-    icon: '<i class="fas fa-exclamation-circle mr-1"></i>',
-    bg: 'bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-800 dark:to-amber-900',
-    text: 'text-amber-800 dark:text-amber-100',
-    iconColor: 'text-amber-500 dark:text-amber-300'
-  },
-  "Agreed": {
-    icon: '<i class="fas fa-handshake mr-1"></i>',
-    bg: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-900',
-    text: 'text-blue-800 dark:text-blue-100',
-    iconColor: 'text-blue-500 dark:text-blue-300'
-  },
-  "Paid": {
-    icon: '<i class="fas fa-check-circle mr-1"></i>',
-    bg: 'bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-800 dark:to-emerald-900',
-    text: 'text-emerald-800 dark:text-emerald-100',
-    iconColor: 'text-emerald-500 dark:text-emerald-300'
-  },
-  "Not Interested": {
-    icon: '<i class="fas fa-ban mr-1"></i>',
-    bg: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-800 dark:to-red-900',
-    text: 'text-red-800 dark:text-red-100',
-    iconColor: 'text-red-500 dark:text-red-300'
-  }
-};
-
+      // Status Configuration - Updated for card backgrounds
+      const statusConfig = {
+        "Not Checked": {
+          icon: '<i class="fas fa-question-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800',
+          text: 'text-gray-800 dark:text-gray-200',
+          iconColor: 'text-gray-500 dark:text-gray-400',
+          pdfColor: '#9ca3af'
+        },
+        "Called": {
+          icon: '<i class="fas fa-phone-alt mr-1"></i>',
+          bg: 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-800 dark:to-purple-900',
+          text: 'text-purple-800 dark:text-purple-100',
+          iconColor: 'text-purple-500 dark:text-purple-300',
+          pdfColor: '#a855f7'
+        },
+        "Follow-Up Needed": {
+          icon: '<i class="fas fa-exclamation-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-800 dark:to-amber-900',
+          text: 'text-amber-800 dark:text-amber-100',
+          iconColor: 'text-amber-500 dark:text-amber-300',
+          pdfColor: '#eab308'
+        },
+        "Agreed": {
+          icon: '<i class="fas fa-handshake mr-1"></i>',
+          bg: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-900',
+          text: 'text-blue-800 dark:text-blue-100',
+          iconColor: 'text-blue-500 dark:text-blue-300',
+          pdfColor: '#3b82f6'
+        },
+        "Paid": {
+          icon: '<i class="fas fa-check-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-800 dark:to-emerald-900',
+          text: 'text-emerald-800 dark:text-emerald-100',
+          iconColor: 'text-emerald-500 dark:text-emerald-300',
+          pdfColor: '#10b981'
+        },
+        "Not Interested": {
+          icon: '<i class="fas fa-ban mr-1"></i>',
+          bg: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-800 dark:to-red-900',
+          text: 'text-red-800 dark:text-red-100',
+          iconColor: 'text-red-500 dark:text-red-300',
+          pdfColor: '#ef4444'
+        }
+      };
 
       // ================ UTILITY FUNCTIONS ================
       const showLoading = () => {
@@ -666,84 +715,140 @@ const statusConfig = {
         }
       };
 
-      const exportToPDF = () => {
-        showLoading();
-        try {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
-          
-          // Title and date
-          doc.setFontSize(18);
-          doc.setTextColor(40);
-          doc.text('Admission Tracker Pro - Student Report', 105, 15, { align: 'center' });
-          
-          doc.setFontSize(10);
-          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 22, { align: 'center' });
-          
-          // Student count info
-          doc.setFontSize(10);
-          doc.text(`Total Students: ${students.length}`, 14, 30);
-          
-          // Table data
-          const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
-          const data = students.map((student, index) => [
-            index + 1,
-            student.name,
-            student.phone,
-            student.class,
-            student.group,
-            student.status,
-            formatDate(student.date)
-          ]);
-          
-          // AutoTable
-          doc.autoTable({
-            head: headers,
-            body: data,
-            startY: 40,
-            theme: 'grid',
-            headStyles: {
-              fillColor: [41, 128, 185],
-              textColor: 255,
-              fontStyle: 'bold'
-            },
-            alternateRowStyles: {
-              fillColor: [245, 245, 245]
-            },
-            styles: {
-              fontSize: 8,
-              cellPadding: 2,
-              overflow: 'linebreak'
-            },
-            columnStyles: {
-              0: { cellWidth: 10 },
-              1: { cellWidth: 40 },
-              2: { cellWidth: 30 },
-              3: { cellWidth: 15 },
-              4: { cellWidth: 20 },
-              5: { cellWidth: 25 },
-              6: { cellWidth: 25 }
-            },
-            margin: { top: 40 }
-          });
-          
-          // Footer with page numbers
-          const pageCount = doc.internal.getNumberOfPages();
-          for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(10);
-            doc.text(`Page ${i} of ${pageCount}`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
-          }
-          
-          doc.save(`students_report_${new Date().toISOString().slice(0, 10)}.pdf`);
-          showToast('PDF exported successfully!', 'success');
-        } catch (error) {
-          console.error('Error exporting PDF:', error);
-          showToast('Failed to export PDF', 'error');
-        } finally {
-          hideLoading();
+   
+const exportToPDF = () => {
+  showLoading();
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    // Title & Meta
+    doc.setFontSize(18);
+    doc.setTextColor(40);
+    doc.text('Admission Tracker Pro - Student Report', 105, 20, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 27, { align: 'center' });
+
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text('This software made by Mustafa Rahman, phone: 01840643946', 105, 33, { align: 'center' });
+
+    // Statistics as inline badges
+    const stats = {
+      "Total Student": filteredStudents.length,
+      "Called": filteredStudents.filter(s => s.status === 'Called').length,
+      "Follow-Up Needed": filteredStudents.filter(s => s.status === 'Follow-Up Needed').length,
+      "Agreed": filteredStudents.filter(s => s.status === 'Agreed').length,
+      "Not Interested": filteredStudents.filter(s => s.status === 'Not Interested').length,
+      "Paid": filteredStudents.filter(s => s.status === 'Paid').length
+    };
+
+    const startX = 15;
+    let posX = startX;
+    let posY = 43;
+    doc.setFontSize(10);
+
+    Object.entries(stats).forEach(([status, count], index) => {
+      const config = statusConfig[status] || statusConfig["Not Checked"];
+      const text = `${status}: ${count}`;
+      const textWidth = doc.getTextWidth(text) + 6;
+
+      doc.setFillColor(config.pdfColor || '#cccccc');
+      doc.setTextColor(255);
+      doc.roundedRect(posX, posY, textWidth, 8, 2, 2, 'F');
+      doc.text(text, posX + 3, posY + 5.5);
+
+      posX += textWidth + 4;
+
+      if (posX > 180) {
+        posX = startX;
+        posY += 10;
+      }
+    });
+
+    // Table Data
+    const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
+    const data = students.map((student, index) => [
+      index + 1,
+      student.name,
+      student.phone,
+      student.class,
+      student.group,
+      student.status,
+      formatDate(student.date)
+    ]);
+
+    doc.autoTable({
+      head: headers,
+      body: data,
+      startY: posY + 12,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+        overflow: 'linebreak',
+        valign: 'middle'
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 15, halign: 'center' },
+        4: { cellWidth: 20, halign: 'center' },
+        5: { cellWidth: 25 },
+        6: { cellWidth: 25, halign: 'center' }
+      },
+      willDrawCell: (data) => {
+        if (data.column.index === 5 && data.section === 'body') {
+          const status = data.cell.raw;
+          const config = statusConfig[status] || statusConfig["Not Checked"];
+          const rgb = hexToRgb(config.pdfColor || '#000000');
+          data.cell.styles.textColor = rgb;
         }
-      };
+      }
+    });
+
+    // Footer Page Numbering
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(`Page ${i} of ${pageCount}`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+    }
+
+    // Save PDF
+    doc.save(`students_report_${new Date().toISOString().slice(0, 10)}.pdf`);
+    showToast('PDF exported successfully!', 'success');
+  } catch (error) {
+    console.error('Error exporting PDF:', error);
+    showToast('Failed to export PDF', 'error');
+  } finally {
+    hideLoading();
+  }
+};
+
+// Helper to convert hex color to RGB
+function hexToRgb(hex) {
+  const bigint = parseInt(hex.replace('#', ''), 16);
+  return [ (bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255 ];
+}
+
+
 
       const backupToJSON = () => {
         showLoading();
@@ -930,7 +1035,7 @@ const statusConfig = {
 
       // ================ UI FUNCTIONS ================
       const filterStudents = () => {
-        const searchTerm = searchInput.value.toLowerCase();
+        const searchTerm = searchInputMobile.value.toLowerCase() || searchInputDesktop.value.toLowerCase();
         const statusValue = statusFilter.value;
         const classValue = classFilter.value;
         const groupValue = groupFilter.value;
@@ -972,14 +1077,49 @@ const statusConfig = {
         }
         
         paginatedStudents.forEach(student => {
-          const config = statusConfig[student.status] || {
-            icon: '<i class="fas fa-question-circle text-gray-500 mr-1"></i>',
-            classes: 'border-l-gray-500'
-          };
+          const config = statusConfig[student.status] || statusConfig["Not Checked"];
           
-    const card = document.createElement('div');
-card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden ${config.bg} ${config.text} border border-gray-200 dark:border-gray-700`;
+          const card = document.createElement('div');
+          card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden ${config.bg} ${config.text} border border-gray-200 dark:border-gray-700 card-hover`;
+          
+          card.innerHTML = `
+            <div class="p-4 text-sm">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-base font-semibold truncate">${student.name}</h3>
+                <div class="flex items-center gap-1 ${config.iconColor}">
+                  ${config.icon}
+                  <span class="text-xs">${student.status}</span>
+                </div>
+              </div>
 
+              <div class="space-y-1 mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-phone-alt ${config.iconColor} text-xs"></i>
+                  <a href="tel:${student.phone}" class="hover:underline">${student.phone}</a>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-graduation-cap ${config.iconColor} text-xs"></i>
+                  <span>Class ${student.class}${student.group !== 'None' ? ` (${student.group})` : ''}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-calendar-day ${config.iconColor} text-xs"></i>
+                  <span>${formatDate(student.date)}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-1">
+                <button onclick="editStudent('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
+                  <i class="fas fa-edit text-xs"></i> Edit
+                </button>
+                <button onclick="deleteStudentPrompt('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
+                  <i class="fas fa-trash text-xs"></i> Delete
+                </button>
+                <a href="tel:${student.phone}" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
+                  <i class="fas fa-phone text-xs"></i> Call
+                </a>
+              </div>
+            </div>
+          `;
 
           studentList.appendChild(card);
         });
@@ -993,45 +1133,7 @@ card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-h
         nextPage.disabled = currentPage === totalPages || totalPages === 0;
       };
 
-      const updateDashboard = () => {card.innerHTML = `
-  <div class="p-3 text-sm sm:text-base">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-sm font-semibold truncate max-w-[60%]">${student.name}</h3>
-      <div class="flex items-center gap-1 ${config.iconColor} text-xs sm:text-sm">
-        ${config.icon}
-        <span>${student.status}</span>
-      </div>
-    </div>
-
-    <div class="space-y-1 mb-3 text-xs sm:text-sm">
-      <div class="flex items-center gap-2">
-        <i class="fas fa-phone-alt ${config.iconColor} text-xs sm:text-sm"></i>
-        <a href="tel:${student.phone}" class="hover:underline break-words">${student.phone}</a>
-      </div>
-      <div class="flex items-center gap-2">
-        <i class="fas fa-graduation-cap ${config.iconColor} text-xs sm:text-sm"></i>
-        <span>Class ${student.class}${student.group !== 'None' ? ` (${student.group})` : ''}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <i class="fas fa-calendar-day ${config.iconColor} text-xs sm:text-sm"></i>
-        <span>${formatDate(student.date)}</span>
-      </div>
-    </div>
-
-    <div class="flex flex-wrap gap-2 sm:gap-3">
-      <button onclick="editStudent('${student.id}')" class="px-2.5 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs sm:text-sm flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-        <i class="fas fa-edit text-xs sm:text-sm"></i> Edit
-      </button>
-      <button onclick="deleteStudentPrompt('${student.id}')" class="px-2.5 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs sm:text-sm flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-        <i class="fas fa-trash text-xs sm:text-sm"></i> Delete
-      </button>
-      <a href="tel:${student.phone}" class="px-2.5 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs sm:text-sm flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-        <i class="fas fa-phone text-xs sm:text-sm"></i> Call
-      </a>
-    </div>
-  </div>
-`;
-
+      const updateDashboard = () => {
         dashboardElements.total.textContent = filteredStudents.length;
         dashboardElements.called.textContent = filteredStudents.filter(s => s.status === 'Called').length;
         dashboardElements.followup.textContent = filteredStudents.filter(s => s.status === 'Follow-Up Needed').length;
@@ -1206,7 +1308,8 @@ card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-h
         studentPanelModal.classList.add('hidden');
       });
       
-      searchInput.addEventListener('input', debounce(filterStudents, 300));
+      searchInputMobile.addEventListener('input', debounce(filterStudents, 300));
+      searchInputDesktop.addEventListener('input', debounce(filterStudents, 300));
       statusFilter.addEventListener('change', filterStudents);
       classFilter.addEventListener('change', filterStudents);
       groupFilter.addEventListener('change', filterStudents);
@@ -1282,7 +1385,23 @@ card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-h
         updateCharts();
       });
       
-      // Make filter section sticky on mobile
+      // Toggle filter controls on mobile
+      filterToggle.addEventListener('click', () => {
+        filterControls.classList.toggle('active');
+        
+        // Toggle icon between filter and close
+        if (filterControls.classList.contains('active')) {
+          filterIcon.classList.remove('fa-filter');
+          filterIcon.classList.add('fa-times');
+          filterControls.style.maxHeight = filterControls.scrollHeight + 'px';
+        } else {
+          filterIcon.classList.remove('fa-times');
+          filterIcon.classList.add('fa-filter');
+          filterControls.style.maxHeight = '0';
+        }
+      });
+      
+      // Make filter section sticky on mobile when scrolling past header
       const handleScroll = () => {
         if (window.innerWidth < 768) { // Mobile view
           const scrollPosition = window.scrollY;
@@ -1303,10 +1422,24 @@ card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-h
       window.addEventListener('scroll', handleScroll);
       window.addEventListener('resize', () => {
         if (window.innerWidth >= 768) {
+          // Desktop - ensure filters are visible and not fixed
+          filterControls.classList.remove('hidden');
+          filterControls.classList.add('grid');
+          filterControls.classList.remove('active');
+          filterIcon.classList.remove('fa-times');
+          filterIcon.classList.add('fa-filter');
+          filterControls.style.maxHeight = '';
           filterSection.classList.remove('fixed', 'top-0', 'left-0', 'right-0', 'rounded-none', 'shadow-lg');
           filterSection.classList.add('rounded-xl');
           document.querySelector('main').style.paddingTop = '';
         } else {
+          // Mobile - ensure filters are hidden by default
+          filterControls.classList.add('hidden');
+          filterControls.classList.remove('grid');
+          filterControls.classList.remove('active');
+          filterIcon.classList.remove('fa-times');
+          filterIcon.classList.add('fa-filter');
+          filterControls.style.maxHeight = '0';
           handleScroll();
         }
       });
@@ -1325,10 +1458,13 @@ card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-h
       initCharts();
       fetchStudents();
       
-    
-      const channel = supabaseMain.channel('students_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'studentsdemo' }, () => {
+      // Set up real-time updates
+      const channel = supabaseMain
+        .channel('students_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'studentsdemo' }, () => {
           fetchStudents();
-        }).subscribe();
+        })
+        .subscribe();
 
       // Expose functions to global scope for button onclick handlers
       window.editStudent = (id) => {
