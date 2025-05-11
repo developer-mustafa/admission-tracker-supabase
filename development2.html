@@ -1325,18 +1325,10 @@ card.innerHTML = `
       initCharts();
       fetchStudents();
       
- const channel = supabaseMain
-  .channel('students_changes')
-  .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'studentsdemo' },
-    (payload) => {
-      // You can log payload if needed
-      // console.log("Change received:", payload);
-      fetchStudents();
-    }
-  )
-  .subscribe();
+    
+      const channel = supabaseMain.channel('students_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'studentsdemo' }, () => {
+          fetchStudents();
+        }).subscribe();
 
       // Expose functions to global scope for button onclick handlers
       window.editStudent = (id) => {
@@ -1369,8 +1361,6 @@ card.innerHTML = `
         );
       };
     });
-
-    
   </script>
 </body>
 </html>
