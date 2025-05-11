@@ -980,44 +980,6 @@ const statusConfig = {
     const card = document.createElement('div');
 card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden ${config.bg} ${config.text} border border-gray-200 dark:border-gray-700`;
 
-card.innerHTML = `
-  <div class="p-4 text-sm">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-base font-semibold truncate">${student.name}</h3>
-      <div class="flex items-center gap-1 ${config.iconColor}">
-        ${config.icon}
-        <span class="text-xs">${student.status}</span>
-      </div>
-    </div>
-
-    <div class="space-y-1 mb-3">
-      <div class="flex items-center gap-2">
-        <i class="fas fa-phone-alt ${config.iconColor} text-xs"></i>
-        <a href="tel:${student.phone}" class="hover:underline">${student.phone}</a>
-      </div>
-      <div class="flex items-center gap-2">
-        <i class="fas fa-graduation-cap ${config.iconColor} text-xs"></i>
-        <span>Class ${student.class}${student.group !== 'None' ? ` (${student.group})` : ''}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <i class="fas fa-calendar-day ${config.iconColor} text-xs"></i>
-        <span>${formatDate(student.date)}</span>
-      </div>
-    </div>
-
-    <div class="flex flex-wrap gap-1">
-      <button onclick="editStudent('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-        <i class="fas fa-edit text-xs"></i> Edit
-      </button>
-      <button onclick="deleteStudentPrompt('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-        <i class="fas fa-trash text-xs"></i> Delete
-      </button>
-      <a href="tel:${student.phone}" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-        <i class="fas fa-phone text-xs"></i> Call
-      </a>
-    </div>
-  </div>
-`;
 
           studentList.appendChild(card);
         });
@@ -1031,7 +993,45 @@ card.innerHTML = `
         nextPage.disabled = currentPage === totalPages || totalPages === 0;
       };
 
-      const updateDashboard = () => {
+      const updateDashboard = () => {card.innerHTML = `
+  <div class="p-3 text-sm sm:text-base">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-sm font-semibold truncate max-w-[60%]">${student.name}</h3>
+      <div class="flex items-center gap-1 ${config.iconColor} text-xs sm:text-sm">
+        ${config.icon}
+        <span>${student.status}</span>
+      </div>
+    </div>
+
+    <div class="space-y-1 mb-3 text-xs sm:text-sm">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-phone-alt ${config.iconColor} text-xs sm:text-sm"></i>
+        <a href="tel:${student.phone}" class="hover:underline break-words">${student.phone}</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fas fa-graduation-cap ${config.iconColor} text-xs sm:text-sm"></i>
+        <span>Class ${student.class}${student.group !== 'None' ? ` (${student.group})` : ''}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fas fa-calendar-day ${config.iconColor} text-xs sm:text-sm"></i>
+        <span>${formatDate(student.date)}</span>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2 sm:gap-3">
+      <button onclick="editStudent('${student.id}')" class="px-2.5 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs sm:text-sm flex items-center gap-1 border border-gray-200 dark:border-gray-600">
+        <i class="fas fa-edit text-xs sm:text-sm"></i> Edit
+      </button>
+      <button onclick="deleteStudentPrompt('${student.id}')" class="px-2.5 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs sm:text-sm flex items-center gap-1 border border-gray-200 dark:border-gray-600">
+        <i class="fas fa-trash text-xs sm:text-sm"></i> Delete
+      </button>
+      <a href="tel:${student.phone}" class="px-2.5 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs sm:text-sm flex items-center gap-1 border border-gray-200 dark:border-gray-600">
+        <i class="fas fa-phone text-xs sm:text-sm"></i> Call
+      </a>
+    </div>
+  </div>
+`;
+
         dashboardElements.total.textContent = filteredStudents.length;
         dashboardElements.called.textContent = filteredStudents.filter(s => s.status === 'Called').length;
         dashboardElements.followup.textContent = filteredStudents.filter(s => s.status === 'Follow-Up Needed').length;
