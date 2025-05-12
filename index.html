@@ -11,8 +11,6 @@
     tailwind.config = {
       darkMode: 'class'
     }
-
-
   </script>
 
   <style>
@@ -44,78 +42,88 @@
     </div>
   </div>
 
-<header class="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-white shadow-lg sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700">
-  <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+  <header
+    class="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-white shadow-lg sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700">
+    <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
 
-    <!-- Branding Section -->
-    <div class="flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
-      <!-- Logo and Title -->
-      <div class="flex items-center gap-3">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-yellow-500 dark:text-yellow-400 drop-shadow" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
-        </svg>
-        <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500 drop-shadow">
-          Admission Tracker Pro
-        </h1>
+      <!-- Branding Section -->
+      <div class="flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
+        <!-- Logo and Title -->
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-yellow-500 dark:text-yellow-400 drop-shadow"
+            fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
+          </svg>
+          <h1
+            class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500 drop-shadow">
+            Admission Tracker Pro
+          </h1>
+        </div>
+
+        <!-- Developer Credit - Modern Compact Badge -->
+        <a href="https://wa.me/+8801840643946" target="_blank"
+          class="group relative inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 dark:from-yellow-400 dark:to-orange-500 text-white text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+
+          <!-- Animated background effect -->
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-sky-600 to-indigo-700 dark:from-yellow-500 dark:to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+
+          <!-- Content -->
+          <span class="relative z-10 flex items-center gap-1.5">
+            <span class="text-xs">👨‍💻</span>
+            <span>Mustafa Rahman</span>
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-3 w-3 ml-0.5 opacity-70 group-hover:translate-x-0.5 group-hover:opacity-100 transition-transform"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
+        </a>
       </div>
 
-     <!-- Developer Credit - Modern Compact Badge -->
-<a href="https://wa.me/+8801840643946" target="_blank" 
-   class="group relative inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 dark:from-yellow-400 dark:to-orange-500 text-white text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
-   
-  <!-- Animated background effect -->
-  <span class="absolute inset-0 bg-gradient-to-r from-sky-600 to-indigo-700 dark:from-yellow-500 dark:to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-  
-  <!-- Content -->
-  <span class="relative z-10 flex items-center gap-1.5">
-    <span class="text-xs">👨‍💻</span>
-    <span>Mustafa Rahman</span>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5 opacity-70 group-hover:translate-x-0.5 group-hover:opacity-100 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-    </svg>
-  </span>
-</a>
-    </div>
+      <!-- Warning Notice - Now with highlighted white background -->
+      <div
+        class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-red-400 rounded-lg p-3 shadow-lg animate-pulse">
+        <div
+          class="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm sm:text-base">
 
-    <!-- Warning Notice - Now with highlighted white background -->
-    <div class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-red-400 rounded-lg p-3 shadow-lg animate-pulse">
-      <div class="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm sm:text-base">
-        
-        <span class="text-center">⚠️ এটি রিয়েল সেন্সসিটিভ ডাটাবেজ ভিত্তিক সফটওয়্যার — তথ্য ডিলেট করা থেকে বিরত থাকুন</span>
+          <span class="text-center">⚠️ এটি রিয়েল সেন্সসিটিভ ডাটাবেজ ভিত্তিক সফটওয়্যার — তথ্য ডিলেট করা থেকে বিরত
+            থাকুন</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Action Buttons -->
-    <div class="flex flex-row items-center justify-center gap-3 w-full md:w-auto">
-      <!-- Add StudentButton -->
-     <button id="openStudentPanel" class="relative overflow-hidden flex items-center gap-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-medium">
-  
-  <!-- Animated background shine effect -->
-  <span class="absolute inset-0 bg-gradient-to-r from-white/20 via-white/0 to-white/20 opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full"></span>
-  
-  <!-- Button content -->
-  <span class="relative z-10 flex items-center gap-2">
-    <i class="fas fa-plus text-sm transition-transform hover:scale-110"></i>
-    <span class="text-sm tracking-wide">Add Student</span>
-  </span>
+      <!-- Action Buttons -->
+      <div class="flex flex-row items-center justify-center gap-3 w-full md:w-auto">
+        <!-- Add StudentButton -->
+        <button id="openStudentPanel"
+          class="relative overflow-hidden flex items-center gap-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-medium">
 
-  <!-- Click effect (works without JS) -->
-  <span class="absolute inset-0 rounded-lg opacity-0 active:opacity-100 active:bg-white/20 transition-opacity duration-300"></span>
-</button>
+          <!-- Animated background shine effect -->
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-white/20 via-white/0 to-white/20 opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full"></span>
 
-      <!-- Dark Mode Toggle -->
-      <div id="darkModeToggle"
-        class="w-16 h-9 flex items-center bg-gray-200 dark:bg-gray-600 rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner">
-        <div id="toggleThumb"
-          class="bg-white dark:bg-yellow-400 w-7 h-7 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center">
-          <span id="toggleIcon" class="text-sm">🌙</span>
+          <!-- Button content -->
+          <span class="relative z-10 flex items-center gap-2">
+            <i class="fas fa-plus text-sm transition-transform hover:scale-110"></i>
+            <span class="text-sm tracking-wide">Add Student</span>
+          </span>
+
+          <!-- Click effect (works without JS) -->
+          <span
+            class="absolute inset-0 rounded-lg opacity-0 active:opacity-100 active:bg-white/20 transition-opacity duration-300"></span>
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <div id="darkModeToggle"
+          class="w-16 h-9 flex items-center bg-gray-200 dark:bg-gray-600 rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner">
+          <div id="toggleThumb"
+            class="bg-white dark:bg-yellow-400 w-7 h-7 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center">
+            <span id="toggleIcon" class="text-sm">🌙</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</header>
-
-
+  </header>
 
   <main class="container mx-auto px-4 py-6 space-y-6">
     <!-- Dashboard Summary -->
@@ -309,7 +317,6 @@
   </main>
 
   <!-- Student Panel Modal -->
-
   <div id="studentPanelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div
       class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-3xl mx-4 border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto p-4">
@@ -403,7 +410,6 @@
     </div>
   </div>
 
-
   <!-- Confirmation Modal -->
   <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div
@@ -440,6 +446,56 @@
 
       // Chart Instances
       let classChart, statusChart, progressChart;
+
+      // Status Configuration - Updated for card backgrounds
+      const statusConfig = {
+        "Not Checked": {
+          icon: '<i class="fas fa-question-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800',
+          text: 'text-gray-800 dark:text-gray-200',
+          iconColor: 'text-gray-500 dark:text-gray-400'
+        },
+        "Called": {
+          icon: '<i class="fas fa-phone-alt mr-1"></i>',
+          bg: 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-800 dark:to-purple-900',
+          text: 'text-purple-800 dark:text-purple-100',
+          iconColor: 'text-purple-500 dark:text-purple-300'
+        },
+        "Follow-Up Needed": {
+          icon: '<i class="fas fa-exclamation-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-800 dark:to-amber-900',
+          text: 'text-amber-800 dark:text-amber-100',
+          iconColor: 'text-amber-500 dark:text-amber-300'
+        },
+        "Agreed": {
+          icon: '<i class="fas fa-handshake mr-1"></i>',
+          bg: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-900',
+          text: 'text-blue-800 dark:text-blue-100',
+          iconColor: 'text-blue-500 dark:text-blue-300'
+        },
+        "Paid": {
+          icon: '<i class="fas fa-check-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-800 dark:to-emerald-900',
+          text: 'text-emerald-800 dark:text-emerald-100',
+          iconColor: 'text-emerald-500 dark:text-emerald-300'
+        },
+        "Not Interested": {
+          icon: '<i class="fas fa-ban mr-1"></i>',
+          bg: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-800 dark:to-red-900',
+          text: 'text-red-800 dark:text-red-100',
+          iconColor: 'text-red-500 dark:text-red-300'
+        }
+      };
+
+      // Status Configuration for PDF
+      const statusConfigs = {
+        "Called": { pdfColor: "#3498db" },
+        "Follow-Up Needed": { pdfColor: "#f1c40f" },
+        "Agreed": { pdfColor: "#2ecc71" },
+        "Not Interested": { pdfColor: "#e74c3c" },
+        "Paid": { pdfColor: "#9b59b6" },
+        "Not Checked": { pdfColor: "#95a5a6" }
+      };
 
       // DOM Elements
       const loadingOverlay = document.getElementById('loadingOverlay');
@@ -482,48 +538,6 @@
         none: document.getElementById('noneStudents'),
         paid: document.getElementById('paidStudents')
       };
-
-
-      // Status Configuration - Updated for card backgrounds
-      const statusConfig = {
-        "Not Checked": {
-          icon: '<i class="fas fa-question-circle mr-1"></i>',
-          bg: 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800',
-          text: 'text-gray-800 dark:text-gray-200',
-          iconColor: 'text-gray-500 dark:text-gray-400'
-        },
-        "Called": {
-          icon: '<i class="fas fa-phone-alt mr-1"></i>',
-          bg: 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-800 dark:to-purple-900',
-          text: 'text-purple-800 dark:text-purple-100',
-          iconColor: 'text-purple-500 dark:text-purple-300'
-        },
-        "Follow-Up Needed": {
-          icon: '<i class="fas fa-exclamation-circle mr-1"></i>',
-          bg: 'bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-800 dark:to-amber-900',
-          text: 'text-amber-800 dark:text-amber-100',
-          iconColor: 'text-amber-500 dark:text-amber-300'
-        },
-        "Agreed": {
-          icon: '<i class="fas fa-handshake mr-1"></i>',
-          bg: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-900',
-          text: 'text-blue-800 dark:text-blue-100',
-          iconColor: 'text-blue-500 dark:text-blue-300'
-        },
-        "Paid": {
-          icon: '<i class="fas fa-check-circle mr-1"></i>',
-          bg: 'bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-800 dark:to-emerald-900',
-          text: 'text-emerald-800 dark:text-emerald-100',
-          iconColor: 'text-emerald-500 dark:text-emerald-300'
-        },
-        "Not Interested": {
-          icon: '<i class="fas fa-ban mr-1"></i>',
-          bg: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-800 dark:to-red-900',
-          text: 'text-red-800 dark:text-red-100',
-          iconColor: 'text-red-500 dark:text-red-300'
-        }
-      };
-
 
       // ================ UTILITY FUNCTIONS ================
       const showLoading = () => {
@@ -582,6 +596,30 @@
         confirmModalTitle.textContent = title;
         confirmModalMessage.textContent = message;
         confirmModal.classList.remove('hidden');
+      };
+
+      // Convert hex to RGB
+      const hexToRgb = (hex) => {
+        const bigint = parseInt(hex.replace('#', ''), 16);
+        return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+      };
+
+      // Helper function to properly parse CSV lines with quoted fields
+      const parseCSVLine = (line) => {
+        const pattern = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g;
+        const values = [];
+        let match;
+        
+        while ((match = pattern.exec(line)) !== null) {
+          let value = match[0];
+          if (value.startsWith(',')) value = value.substring(1);
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.substring(1, value.length - 1).replace(/""/g, '"');
+          }
+          values.push(value);
+        }
+        
+        return values;
       };
 
       // ================ DATA FUNCTIONS ================
@@ -697,33 +735,38 @@
         }
       };
 
-
-
-
       const exportToCSV = () => {
         showLoading();
         try {
-          let csvContent = "data:text/csv;charset=utf-8,";
-          csvContent += "Sl No,Name,Phone,Class,Group,Date,Status,Info\n";
-
-          students.forEach((student, index) => {
-            const row = [
+          // Create CSV headers
+          const headers = ['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Date', 'Status', 'Info'];
+          
+          // Process data rows with proper CSV escaping
+          const rows = students.map((student, index) => {
+            return [
               index + 1,
-              `"${student.name}"`,
+              `"${student.name.replace(/"/g, '""')}"`, // Properly escape quotes in names
               student.phone,
               student.class,
               student.group,
               student.date,
               student.status,
               student.info ? `"${student.info.replace(/"/g, '""')}"` : ''
-            ].join(",");
-            csvContent += row + "\n";
+            ];
           });
 
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
+          // Combine headers and rows
+          const csvContent = [headers, ...rows]
+            .map(row => row.join(','))
+            .join('\n');
+
+          // Create download link
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.setAttribute('href', url);
+          link.setAttribute('download', `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
+          link.style.visibility = 'hidden';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -736,19 +779,6 @@
           hideLoading();
         }
       };
-
-
-
-
-      const statusConfigs = {
-        "Called": { pdfColor: "#3498db" },
-        "Follow-Up Needed": { pdfColor: "#f1c40f" },
-        "Agreed": { pdfColor: "#2ecc71" },
-        "Not Interested": { pdfColor: "#e74c3c" },
-        "Paid": { pdfColor: "#9b59b6" },
-        "Not Checked": { pdfColor: "#95a5a6" }
-      };
-
 
       const exportToPDF = () => {
         showLoading();
@@ -766,31 +796,34 @@
           doc.text('Admission Tracker Pro - Student Report', 105, 20, { align: 'center' });
 
           doc.setFontSize(10);
-          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 27, { align: 'center' });
+          doc.text(`Generated on: ${new Date().toLocaleDateString()} Developed by Mustafa Rahman`, 105, 27, { align: 'center' });
+          doc.text(`Total Students: ${filteredStudents.length}`, 105, 32, { align: 'center' });
+          
 
-          doc.setFontSize(9);
-          doc.setTextColor(100);
-          doc.text('This software made by Mustafa Rahman, phone: 01840643946', 105, 33, { align: 'center' });
+          // Statistics section
+          const stats = [
+            { label: "Called", value: filteredStudents.filter(s => s.status === 'Called').length },
+            { label: "Follow-Up", value: filteredStudents.filter(s => s.status === 'Follow-Up Needed').length },
+            { label: "Agreed", value: filteredStudents.filter(s => s.status === 'Agreed').length },
+            { label: "Paid", value: filteredStudents.filter(s => s.status === 'Paid').length },
+            { label: "Not Interested", value: filteredStudents.filter(s => s.status === 'Not Interested').length },
+            { label: "Not Checked", value: filteredStudents.filter(s => s.status === 'Not Checked').length }
+          ];
 
-          // Statistics badges
-          const stats = {
-            "Total Student": filteredStudents.length,
-            "Called": filteredStudents.filter(s => s.status === 'Called').length,
-            "Follow-Up Needed": filteredStudents.filter(s => s.status === 'Follow-Up Needed').length,
-            "Agreed": filteredStudents.filter(s => s.status === 'Agreed').length,
-            "Not Interested": filteredStudents.filter(s => s.status === 'Not Interested').length,
-            "Paid": filteredStudents.filter(s => s.status === 'Paid').length
-          };
-
-          const startX = 15;
+          let startX = 15;
           let posX = startX;
           let posY = 43;
           doc.setFontSize(10);
 
-          Object.entries(stats).forEach(([status, count]) => {
-            const config = statusConfigs[status] || statusConfigs["Not Checked"];
-            const text = `${status}: ${count}`;
+          stats.forEach(stat => {
+            const config = statusConfigs[stat.label] || statusConfigs["Not Checked"];
+            const text = `${stat.label}: ${stat.value}`;
             const textWidth = doc.getTextWidth(text) + 6;
+
+            if (posX + textWidth > 190) {
+              posX = startX;
+              posY += 10;
+            }
 
             const rgb = hexToRgb(config.pdfColor || '#cccccc');
             doc.setFillColor(...rgb);
@@ -799,17 +832,13 @@
             doc.text(text, posX + 3, posY + 5.5);
 
             posX += textWidth + 4;
-            if (posX > 180) {
-              posX = startX;
-              posY += 10;
-            }
           });
 
-          // Table data
+          // Table data - using filteredStudents instead of all students
           const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
-          const data = students.map((student, index) => [
+          const data = filteredStudents.map((student, index) => [
             index + 1,
-            student.name,
+            student.name.length > 20 ? student.name.substring(0, 17) + '...' : student.name,
             student.phone,
             student.class,
             student.group,
@@ -840,10 +869,10 @@
             columnStyles: {
               0: { cellWidth: 10, halign: 'center' },
               1: { cellWidth: 40 },
-              2: { cellWidth: 30 },
+              2: { cellWidth: 25 },
               3: { cellWidth: 15, halign: 'center' },
               4: { cellWidth: 20, halign: 'center' },
-              5: { cellWidth: 25 }, // Status
+              5: { cellWidth: 25 },
               6: { cellWidth: 25, halign: 'center' }
             },
             didParseCell: (data) => {
@@ -853,7 +882,8 @@
                 const rgb = hexToRgb(config.pdfColor || '#000000');
                 data.cell.styles.textColor = rgb;
               }
-            }
+            },
+            margin: { top: posY + 12 }
           });
 
           // Footer page numbering
@@ -862,7 +892,7 @@
             doc.setPage(i);
             doc.setFontSize(10);
             doc.setTextColor(100);
-            doc.text(`Page ${i} of ${pageCount} developed by Mustafa Rahman`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+            doc.text(`Page ${i} of ${pageCount}`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
           }
 
           // Save
@@ -875,15 +905,6 @@
           hideLoading();
         }
       };
-
-      // Convert hex to RGB
-      function hexToRgb(hex) {
-        const bigint = parseInt(hex.replace('#', ''), 16);
-        return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
-      }
-
-
-
 
       const backupToJSON = () => {
         showLoading();
@@ -986,32 +1007,52 @@
           try {
             const csvData = event.target.result;
             const lines = csvData.split('\n');
+            
+            // Parse headers and find column indices
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const nameIndex = headers.findIndex(h => h.toLowerCase() === 'name');
+            const phoneIndex = headers.findIndex(h => h.toLowerCase() === 'phone');
+            const classIndex = headers.findIndex(h => h.toLowerCase() === 'class');
+            const groupIndex = headers.findIndex(h => h.toLowerCase() === 'group');
+            const dateIndex = headers.findIndex(h => h.toLowerCase() === 'date');
+            const statusIndex = headers.findIndex(h => h.toLowerCase() === 'status');
+            const infoIndex = headers.findIndex(h => h.toLowerCase() === 'info');
+
+            if (nameIndex === -1 || phoneIndex === -1 || classIndex === -1) {
+              throw new Error('CSV must contain at least Name, Phone, and Class columns');
+            }
+
             const newStudents = [];
+            const errors = [];
 
             for (let i = 1; i < lines.length; i++) {
               if (!lines[i].trim()) continue;
 
-              const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-              if (values.length < headers.length) continue;
+              try {
+                // Use a proper CSV parser for the line
+                const values = parseCSVLine(lines[i]);
+                
+                // Skip if required fields are missing
+                if (!values[nameIndex] || !values[phoneIndex] || !values[classIndex]) {
+                  errors.push(`Skipping row ${i+1}: Missing required fields`);
+                  continue;
+                }
 
-              const student = {};
-              headers.forEach((header, index) => {
-                let value = values[index] ? values[index].trim().replace(/^"|"$/g, '') : '';
-                if (header === 'Date' && !value) value = new Date().toISOString().split('T')[0];
-                student[header.toLowerCase()] = value;
-              });
-
-              if (student.name && student.phone && student.class) {
                 newStudents.push({
-                  name: student.name,
-                  phone: student.phone,
-                  class: student.class,
-                  group: student.group || 'None',
-                  date: student.date || new Date().toISOString().split('T')[0],
-                  status: student.status || 'Not Checked',
-                  info: student.info || ''
+                  name: values[nameIndex].trim(),
+                  phone: values[phoneIndex].trim(),
+                  class: values[classIndex].trim(),
+                  group: (groupIndex !== -1 && values[groupIndex]) ? values[groupIndex].trim() : 'None',
+                  date: (dateIndex !== -1 && values[dateIndex]) ? 
+                    values[dateIndex].trim() : 
+                    new Date().toISOString().split('T')[0],
+                  status: (statusIndex !== -1 && values[statusIndex]) ? 
+                    values[statusIndex].trim() : 
+                    'Not Checked',
+                  info: (infoIndex !== -1 && values[infoIndex]) ? values[infoIndex].trim() : ''
                 });
+              } catch (error) {
+                errors.push(`Error parsing row ${i+1}: ${error.message}`);
               }
             }
 
@@ -1019,9 +1060,14 @@
               throw new Error('No valid student records found in CSV');
             }
 
+            if (errors.length > 0) {
+              console.warn('CSV import warnings:', errors);
+            }
+
             showConfirmation(
               'Import CSV',
-              `This will import ${newStudents.length} student records. Continue?`,
+              `This will import ${newStudents.length} student records${errors.length > 0 ? 
+                ` (${errors.length} rows had issues)` : ''}. Continue?`,
               'importCSV',
               newStudents
             );
@@ -1422,8 +1468,6 @@
         updateCharts();
       });
 
-
-
       // Initialize dark mode from localStorage
       if (localStorage.getItem('darkMode') === 'true') {
         document.documentElement.classList.add('dark');
@@ -1444,8 +1488,6 @@
           'postgres_changes',
           { event: '*', schema: 'public', table: 'studentsdemo' },
           (payload) => {
-            // You can log payload if needed
-            // console.log("Change received:", payload);
             fetchStudents();
           }
         )
@@ -1482,9 +1524,7 @@
         );
       };
     });
-
   </script>
-
 
   <footer class="bg-white/30 dark:bg-gray-900/30 backdrop-blur-lg text-gray-800 dark:text-white mt-10 shadow-inner">
     <div class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
@@ -1517,7 +1557,7 @@
           <a href="https://wa.me/+8801840643946" target="_blank" class="hover:text-green-500 transition">
             <i class="fab fa-whatsapp"></i>
           </a>
-          <a href="mailto:your@email.com" class="hover:text-red-500 transition">
+          <a href="mailto:mustafa.rahman.official@gmail.com" class="hover:text-red-500 transition">
             <i class="fas fa-envelope"></i>
           </a>
           <a href="https://mustafaofficial.netlify.app" target="_blank" class="hover:text-blue-600 transition">

@@ -12,6 +12,16 @@
       darkMode: 'class'
     }
   </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: "Hind Siliguri", sans-serif;
+    }
+
+    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+  </style>
   <!-- jsPDF for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -32,53 +42,88 @@
     </div>
   </div>
 
-  <!-- Header Section -->
-<header
-  class="backdrop-blur-lg bg-white/30 dark:bg-gray-900/30 text-gray-900 dark:text-white py-4 shadow-2xl top-0 z-30">
-  <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-    
-    <!-- Logo and Combined Branding -->
-    <div class="flex items-center gap-4 flex-wrap text-center md:text-left">
-      <!-- Icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-400 dark:text-yellow-300"
-        fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
-      </svg>
+  <header
+    class="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-white shadow-lg sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700">
+    <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
 
-      <!-- Title & Credit -->
-      <div>
-        <h1
-          class="text-2xl md:text-3xl font-extrabold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500 drop-shadow-md">
-          Admission Tracker Pro
-        </h1>
-        <a href="https://wa.me/+8801840643946" target="_blank" rel="noopener noreferrer"
-          class="inline-block mt-1 px-2 py-0.5 text-[13px] font-semibold tracking-wide rounded bg-gradient-to-r from-sky-500 to-indigo-600 text-white dark:from-yellow-400 dark:to-orange-500 shadow hover:shadow-md transition duration-300">
-          👨‍💻Mustafa Rahman
+      <!-- Branding Section -->
+      <div class="flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
+        <!-- Logo and Title -->
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-yellow-500 dark:text-yellow-400 drop-shadow"
+            fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
+          </svg>
+          <h1
+            class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500 drop-shadow">
+            Admission Tracker Pro
+          </h1>
+        </div>
+
+        <!-- Developer Credit - Modern Compact Badge -->
+        <a href="https://wa.me/+8801840643946" target="_blank"
+          class="group relative inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 dark:from-yellow-400 dark:to-orange-500 text-white text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+
+          <!-- Animated background effect -->
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-sky-600 to-indigo-700 dark:from-yellow-500 dark:to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+
+          <!-- Content -->
+          <span class="relative z-10 flex items-center gap-1.5">
+            <span class="text-xs">👨‍💻</span>
+            <span>Mustafa Rahman</span>
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-3 w-3 ml-0.5 opacity-70 group-hover:translate-x-0.5 group-hover:opacity-100 transition-transform"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
         </a>
       </div>
-    </div>
 
-    <!-- Right Controls -->
-    <div class="flex items-center gap-4 flex-wrap justify-center md:justify-end">
-      <!-- Add Student Button -->
-      <button id="openStudentPanel"
-        class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-all">
-        <i class="fas fa-plus"></i>
-        <span class="hidden md:inline">Add Student</span>
-      </button>
+      <!-- Warning Notice - Now with highlighted white background -->
+      <div
+        class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-red-400 rounded-lg p-3 shadow-lg animate-pulse">
+        <div
+          class="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm sm:text-base">
 
-      <!-- Dark Mode Toggle -->
-      <div id="darkModeToggle"
-        class="w-14 h-8 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer transition-all duration-300">
-        <div id="toggleThumb"
-          class="bg-white dark:bg-yellow-400 w-6 h-6 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center">
-          <span id="toggleIcon" class="text-sm">🌙</span>
+          <span class="text-center">⚠️ এটি রিয়েল সেন্সসিটিভ ডাটাবেজ ভিত্তিক সফটওয়্যার — তথ্য ডিলেট করা থেকে বিরত
+            থাকুন</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-row items-center justify-center gap-3 w-full md:w-auto">
+        <!-- Add StudentButton -->
+        <button id="openStudentPanel"
+          class="relative overflow-hidden flex items-center gap-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-medium">
+
+          <!-- Animated background shine effect -->
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-white/20 via-white/0 to-white/20 opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full"></span>
+
+          <!-- Button content -->
+          <span class="relative z-10 flex items-center gap-2">
+            <i class="fas fa-plus text-sm transition-transform hover:scale-110"></i>
+            <span class="text-sm tracking-wide">Add Student</span>
+          </span>
+
+          <!-- Click effect (works without JS) -->
+          <span
+            class="absolute inset-0 rounded-lg opacity-0 active:opacity-100 active:bg-white/20 transition-opacity duration-300"></span>
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <div id="darkModeToggle"
+          class="w-16 h-9 flex items-center bg-gray-200 dark:bg-gray-600 rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner">
+          <div id="toggleThumb"
+            class="bg-white dark:bg-yellow-400 w-7 h-7 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center">
+            <span id="toggleIcon" class="text-sm">🌙</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</header>
-
+  </header>
 
   <main class="container mx-auto px-4 py-6 space-y-6">
     <!-- Dashboard Summary -->
@@ -146,15 +191,17 @@
     </section>
 
     <!-- Search & Filters Section -->
-    <section
-      class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 sticky top-0 z-20 border border-gray-200 dark:border-gray-700">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        <input id="searchInput" type="text" placeholder="Search students..."
-          class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 col-span-2">
+    <section id="filterSection"
+      class="bg-white dark:bg-gray-800 rounded-xl shadow p-3 border border-gray-200 dark:border-gray-700 md:sticky md:top-0 z-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2">
+
+        <input id="searchInput" type="text" placeholder="Search students"
+          class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 md:col-span-1">
 
         <select id="statusFilter"
           class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
           <option value="">All Statuses</option>
+          <option value="Not Checked">Not Checked</option>
           <option value="Called">Called</option>
           <option value="Follow-Up Needed">Follow-Up Needed</option>
           <option value="Agreed">Agreed</option>
@@ -173,26 +220,20 @@
           <option value="11">Class 11</option>
           <option value="12">Class 12</option>
         </select>
+
+        <select id="groupFilter"
+          class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
+          <option value="">All Groups</option>
+          <option value="General">General</option>
+          <option value="Science">Science</option>
+          <option value="Arts">Arts</option>
+          <option value="Commerce">Commerce</option>
+        </select>
       </div>
 
-      <div class="flex flex-col md:flex-row  justify-between items-center gap-4">
-        <a href="https://mustafaofficial.netlify.app/" target="_blank" 
-          class="group inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 transition duration-300 hover:text-blue-800 dark:hover:text-blue-200">
-          <span class="relative inline-block overflow-hidden">
-            <span class="block transform group-hover:-translate-y-full transition duration-300">
-              Developed by Mustafa Rahman
-            </span>
-            <span
-              class="absolute left-0 top-0 block transform translate-y-full group-hover:translate-y-0 transition duration-300">
-              Developed by Mustafa Rahman
-            </span>
-          </span>
-          <i class="fas fa-external-link-alt text-xs opacity-70 group-hover:opacity-100 transition duration-300"></i>
-        </a>
-
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="text-sm text-gray-600 dark:text-gray-400">
           Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> students
-
         </div>
 
         <div class="flex space-x-2">
@@ -275,104 +316,99 @@
     </section>
   </main>
 
-
   <!-- Student Panel Modal -->
-  <div id="studentPanelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div
-    class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-3xl mx-2 border border-gray-200 dark:border-gray-700 max-h-[95vh] overflow-hidden shadow-lg">
-
-    <!-- Modal Header -->
-    <div class="flex justify-between items-center px-4 py-3 border-b dark:border-gray-600">
-      <h2 id="modalTitle" class="text-xl font-semibold text-gray-800 dark:text-white">Add Student</h2>
-      <button id="closeStudentPanel"
-        class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xl focus:outline-none">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <!-- Modal Body/Form -->
-    <form id="studentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-4 overflow-y-auto max-h-[calc(95vh-60px)]">
-
-      <!-- Name -->
-      <div>
-        <label for="name" class="block text-sm font-medium mb-1 dark:text-gray-200">Name*</label>
-        <input type="text" id="name" required
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-      </div>
-
-      <!-- Phone -->
-      <div>
-        <label for="phone" class="block text-sm font-medium mb-1 dark:text-gray-200">Phone*</label>
-        <input type="tel" id="phone" required
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-      </div>
-
-      <!-- Class -->
-      <div>
-        <label for="class" class="block text-sm font-medium mb-1 dark:text-gray-200">Class*</label>
-        <select id="class" required
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option value="">Select Class</option>
-          <option value="6">Class 6</option>
-          <option value="7">Class 7</option>
-          <option value="8">Class 8</option>
-          <option value="9">Class 9</option>
-          <option value="10">Class 10</option>
-          <option value="11">Class 11</option>
-          <option value="12">Class 12</option>
-        </select>
-      </div>
-
-      <!-- Group -->
-      <div>
-        <label for="group" class="block text-sm font-medium mb-1 dark:text-gray-200">Group</label>
-        <select id="group"
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option value="None">None</option>
-          <option value="General">General</option>
-          <option value="Science">Science</option>
-          <option value="Arts">Arts</option>
-          <option value="Commerce">Commerce</option>
-        </select>
-      </div>
-
-      <!-- Date -->
-      <div>
-        <label for="date" class="block text-sm font-medium mb-1 dark:text-gray-200">Date*</label>
-        <input type="date" id="date" required
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-      </div>
-
-      <!-- Status -->
-      <div>
-        <label for="status" class="block text-sm font-medium mb-1 dark:text-gray-200">Status*</label>
-        <select id="status" required
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option value="Called">Called</option>
-          <option value="Follow-Up Needed">Follow-Up Needed</option>
-          <option value="Agreed">Agreed</option>
-          <option value="Paid">Paid</option>
-          <option value="Not Interested">Not Interested</option>
-        </select>
-      </div>
-
-      <!-- Info -->
-      <div class="md:col-span-2">
-        <label for="info" class="block text-sm font-medium mb-1 dark:text-gray-200">Additional Info</label>
-        <textarea id="info" rows="3"
-          class="w-full p-2.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-      </div>
-
-      <!-- Submit -->
-      <div class="md:col-span-2">
-        <button type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-md transition flex items-center justify-center gap-2 text-lg">
-          <i class="fas fa-save"></i> Save Student
+  <div id="studentPanelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-3xl mx-4 border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto p-4">
+      <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 z-10 py-2">
+        <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 dark:text-white">Add Student</h2>
+        <button id="closeStudentPanel" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xl">
+          <i class="fas fa-times"></i>
         </button>
       </div>
-    </form>
+
+      <form id="studentForm" class="grid grid-cols-2 gap-x-4 gap-y-4">
+        <!-- Name -->
+        <div class="col-span-2 sm:col-span-1">
+          <label for="name" class="block text-sm font-medium mb-1 dark:text-gray-200">Name*</label>
+          <input type="text" id="name" required
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+
+        <!-- Phone -->
+        <div class="col-span-2 sm:col-span-1">
+          <label for="phone" class="block text-sm font-medium mb-1 dark:text-gray-200">Phone*</label>
+          <input type="tel" id="phone" required
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+
+        <!-- Class -->
+        <div class="col-span-2 sm:col-span-1">
+          <label for="class" class="block text-sm font-medium mb-1 dark:text-gray-200">Class*</label>
+          <select id="class" required
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <option value="">Select Class</option>
+            <option value="6">Class 6</option>
+            <option value="7">Class 7</option>
+            <option value="8">Class 8</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+            <option value="11">Class 11</option>
+            <option value="12">Class 12</option>
+          </select>
+        </div>
+
+        <!-- Group -->
+        <div class="col-span-2 sm:col-span-1">
+          <label for="group" class="block text-sm font-medium mb-1 dark:text-gray-200">Group</label>
+          <select id="group"
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <option value="None">None</option>
+            <option value="General">General</option>
+            <option value="Science">Science</option>
+            <option value="Arts">Arts</option>
+            <option value="Commerce">Commerce</option>
+          </select>
+        </div>
+
+        <!-- Date -->
+        <div class="col-span-2 sm:col-span-1">
+          <label for="date" class="block text-sm font-medium mb-1 dark:text-gray-200">Date*</label>
+          <input type="date" id="date" required
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+
+        <!-- Status -->
+        <div class="col-span-2 sm:col-span-1">
+          <label for="status" class="block text-sm font-medium mb-1 dark:text-gray-200">Status*</label>
+          <select id="status" required
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <option value="Not Checked">Not Checked</option>
+            <option value="Called">Called</option>
+            <option value="Follow-Up Needed">Follow-Up Needed</option>
+            <option value="Agreed">Agreed</option>
+            <option value="Paid">Paid</option>
+            <option value="Not Interested">Not Interested</option>
+          </select>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="col-span-2">
+          <label for="info" class="block text-sm font-medium mb-1 dark:text-gray-200">Additional Info</label>
+          <textarea id="info" rows="3"
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-span-2">
+          <button type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition flex items-center justify-center gap-2 text-lg">
+            <i class="fas fa-save"></i> Save Student
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
   <!-- Confirmation Modal -->
   <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -411,6 +447,56 @@
       // Chart Instances
       let classChart, statusChart, progressChart;
 
+      // Status Configuration - Updated for card backgrounds
+      const statusConfig = {
+        "Not Checked": {
+          icon: '<i class="fas fa-question-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800',
+          text: 'text-gray-800 dark:text-gray-200',
+          iconColor: 'text-gray-500 dark:text-gray-400'
+        },
+        "Called": {
+          icon: '<i class="fas fa-phone-alt mr-1"></i>',
+          bg: 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-800 dark:to-purple-900',
+          text: 'text-purple-800 dark:text-purple-100',
+          iconColor: 'text-purple-500 dark:text-purple-300'
+        },
+        "Follow-Up Needed": {
+          icon: '<i class="fas fa-exclamation-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-800 dark:to-amber-900',
+          text: 'text-amber-800 dark:text-amber-100',
+          iconColor: 'text-amber-500 dark:text-amber-300'
+        },
+        "Agreed": {
+          icon: '<i class="fas fa-handshake mr-1"></i>',
+          bg: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-800 dark:to-blue-900',
+          text: 'text-blue-800 dark:text-blue-100',
+          iconColor: 'text-blue-500 dark:text-blue-300'
+        },
+        "Paid": {
+          icon: '<i class="fas fa-check-circle mr-1"></i>',
+          bg: 'bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-800 dark:to-emerald-900',
+          text: 'text-emerald-800 dark:text-emerald-100',
+          iconColor: 'text-emerald-500 dark:text-emerald-300'
+        },
+        "Not Interested": {
+          icon: '<i class="fas fa-ban mr-1"></i>',
+          bg: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-800 dark:to-red-900',
+          text: 'text-red-800 dark:text-red-100',
+          iconColor: 'text-red-500 dark:text-red-300'
+        }
+      };
+
+      // Status Configuration for PDF
+      const statusConfigs = {
+        "Called": { pdfColor: "#3498db" },
+        "Follow-Up Needed": { pdfColor: "#f1c40f" },
+        "Agreed": { pdfColor: "#2ecc71" },
+        "Not Interested": { pdfColor: "#e74c3c" },
+        "Paid": { pdfColor: "#9b59b6" },
+        "Not Checked": { pdfColor: "#95a5a6" }
+      };
+
       // DOM Elements
       const loadingOverlay = document.getElementById('loadingOverlay');
       const studentPanelModal = document.getElementById('studentPanelModal');
@@ -422,6 +508,7 @@
       const searchInput = document.getElementById('searchInput');
       const statusFilter = document.getElementById('statusFilter');
       const classFilter = document.getElementById('classFilter');
+      const groupFilter = document.getElementById('groupFilter');
       const prevPage = document.getElementById('prevPage');
       const nextPage = document.getElementById('nextPage');
       const pageInfo = document.getElementById('pageInfo');
@@ -440,6 +527,7 @@
       const darkModeToggle = document.getElementById('darkModeToggle');
       const toggleThumb = document.getElementById('toggleThumb');
       const toggleIcon = document.getElementById('toggleIcon');
+      const filterSection = document.getElementById('filterSection');
 
       // Dashboard Elements
       const dashboardElements = {
@@ -449,30 +537,6 @@
         agreed: document.getElementById('agreedStudents'),
         none: document.getElementById('noneStudents'),
         paid: document.getElementById('paidStudents')
-      };
-
-      // Status Configuration
-      const statusConfig = {
-        "Called": {
-          icon: '<i class="fas fa-phone-alt text-purple-500 mr-1"></i>',
-          classes: 'border-l-purple-500'
-        },
-        "Follow-Up Needed": {
-          icon: '<i class="fas fa-exclamation-circle text-yellow-500 mr-1"></i>',
-          classes: 'border-l-yellow-500'
-        },
-        "Agreed": {
-          icon: '<i class="fas fa-handshake text-blue-500 mr-1"></i>',
-          classes: 'border-l-blue-500'
-        },
-        "Paid": {
-          icon: '<i class="fas fa-check-circle text-emerald-500 mr-1"></i>',
-          classes: 'border-l-emerald-500'
-        },
-        "Not Interested": {
-          icon: '<i class="fas fa-ban text-red-500 mr-1"></i>',
-          classes: 'border-l-red-500'
-        }
       };
 
       // ================ UTILITY FUNCTIONS ================
@@ -532,6 +596,30 @@
         confirmModalTitle.textContent = title;
         confirmModalMessage.textContent = message;
         confirmModal.classList.remove('hidden');
+      };
+
+      // Convert hex to RGB
+      const hexToRgb = (hex) => {
+        const bigint = parseInt(hex.replace('#', ''), 16);
+        return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+      };
+
+      // Helper function to properly parse CSV lines with quoted fields
+      const parseCSVLine = (line) => {
+        const pattern = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g;
+        const values = [];
+        let match;
+        
+        while ((match = pattern.exec(line)) !== null) {
+          let value = match[0];
+          if (value.startsWith(',')) value = value.substring(1);
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.substring(1, value.length - 1).replace(/""/g, '"');
+          }
+          values.push(value);
+        }
+        
+        return values;
       };
 
       // ================ DATA FUNCTIONS ================
@@ -650,26 +738,35 @@
       const exportToCSV = () => {
         showLoading();
         try {
-          let csvContent = "data:text/csv;charset=utf-8,";
-          csvContent += "Name,Phone,Class,Group,Date,Status,Info\n";
-
-          students.forEach(student => {
-            const row = [
-              `"${student.name}"`,
+          // Create CSV headers
+          const headers = ['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Date', 'Status', 'Info'];
+          
+          // Process data rows with proper CSV escaping
+          const rows = students.map((student, index) => {
+            return [
+              index + 1,
+              `"${student.name.replace(/"/g, '""')}"`, // Properly escape quotes in names
               student.phone,
               student.class,
               student.group,
               student.date,
               student.status,
               student.info ? `"${student.info.replace(/"/g, '""')}"` : ''
-            ].join(",");
-            csvContent += row + "\n";
+            ];
           });
 
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
+          // Combine headers and rows
+          const csvContent = [headers, ...rows]
+            .map(row => row.join(','))
+            .join('\n');
+
+          // Create download link
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.setAttribute('href', url);
+          link.setAttribute('download', `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
+          link.style.visibility = 'hidden';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -687,18 +784,60 @@
         showLoading();
         try {
           const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
+          const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+          });
 
+          // Title & Meta
           doc.setFontSize(18);
           doc.setTextColor(40);
-          doc.text('Admission Tracker Pro - Student Report', 105, 15, { align: 'center' });
+          doc.text('Admission Tracker Pro - Student Report', 105, 20, { align: 'center' });
 
           doc.setFontSize(10);
-          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 22, { align: 'center' });
+          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 27, { align: 'center' });
+          doc.text(`Total Students: ${filteredStudents.length}`, 105, 32, { align: 'center' });
 
-          const headers = [['Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
-          const data = students.map(student => [
-            student.name,
+          // Statistics section
+          const stats = [
+            { label: "Called", value: filteredStudents.filter(s => s.status === 'Called').length },
+            { label: "Follow-Up", value: filteredStudents.filter(s => s.status === 'Follow-Up Needed').length },
+            { label: "Agreed", value: filteredStudents.filter(s => s.status === 'Agreed').length },
+            { label: "Paid", value: filteredStudents.filter(s => s.status === 'Paid').length },
+            { label: "Not Interested", value: filteredStudents.filter(s => s.status === 'Not Interested').length },
+            { label: "Not Checked", value: filteredStudents.filter(s => s.status === 'Not Checked').length }
+          ];
+
+          let startX = 15;
+          let posX = startX;
+          let posY = 43;
+          doc.setFontSize(10);
+
+          stats.forEach(stat => {
+            const config = statusConfigs[stat.label] || statusConfigs["Not Checked"];
+            const text = `${stat.label}: ${stat.value}`;
+            const textWidth = doc.getTextWidth(text) + 6;
+
+            if (posX + textWidth > 190) {
+              posX = startX;
+              posY += 10;
+            }
+
+            const rgb = hexToRgb(config.pdfColor || '#cccccc');
+            doc.setFillColor(...rgb);
+            doc.setTextColor(255);
+            doc.roundedRect(posX, posY, textWidth, 8, 2, 2, 'F');
+            doc.text(text, posX + 3, posY + 5.5);
+
+            posX += textWidth + 4;
+          });
+
+          // Table data - using filteredStudents instead of all students
+          const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
+          const data = filteredStudents.map((student, index) => [
+            index + 1,
+            student.name.length > 20 ? student.name.substring(0, 17) + '...' : student.name,
             student.phone,
             student.class,
             student.group,
@@ -709,12 +848,13 @@
           doc.autoTable({
             head: headers,
             body: data,
-            startY: 30,
+            startY: posY + 12,
             theme: 'grid',
             headStyles: {
               fillColor: [41, 128, 185],
               textColor: 255,
-              fontStyle: 'bold'
+              fontStyle: 'bold',
+              halign: 'center'
             },
             alternateRowStyles: {
               fillColor: [245, 245, 245]
@@ -722,18 +862,39 @@
             styles: {
               fontSize: 8,
               cellPadding: 2,
-              overflow: 'linebreak'
+              overflow: 'linebreak',
+              valign: 'middle'
             },
             columnStyles: {
-              0: { cellWidth: 40 },
-              1: { cellWidth: 30 },
-              2: { cellWidth: 15 },
-              3: { cellWidth: 20 },
-              4: { cellWidth: 30 },
-              5: { cellWidth: 25 }
-            }
+              0: { cellWidth: 10, halign: 'center' },
+              1: { cellWidth: 40 },
+              2: { cellWidth: 25 },
+              3: { cellWidth: 15, halign: 'center' },
+              4: { cellWidth: 20, halign: 'center' },
+              5: { cellWidth: 25 },
+              6: { cellWidth: 25, halign: 'center' }
+            },
+            didParseCell: (data) => {
+              if (data.section === 'body' && data.column.index === 5) {
+                const status = data.cell.raw;
+                const config = statusConfigs[status] || statusConfigs["Not Checked"];
+                const rgb = hexToRgb(config.pdfColor || '#000000');
+                data.cell.styles.textColor = rgb;
+              }
+            },
+            margin: { top: posY + 12 }
           });
 
+          // Footer page numbering
+          const pageCount = doc.internal.getNumberOfPages();
+          for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Page ${i} of ${pageCount}`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+          }
+
+          // Save
           doc.save(`students_report_${new Date().toISOString().slice(0, 10)}.pdf`);
           showToast('PDF exported successfully!', 'success');
         } catch (error) {
@@ -845,32 +1006,52 @@
           try {
             const csvData = event.target.result;
             const lines = csvData.split('\n');
+            
+            // Parse headers and find column indices
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const nameIndex = headers.findIndex(h => h.toLowerCase() === 'name');
+            const phoneIndex = headers.findIndex(h => h.toLowerCase() === 'phone');
+            const classIndex = headers.findIndex(h => h.toLowerCase() === 'class');
+            const groupIndex = headers.findIndex(h => h.toLowerCase() === 'group');
+            const dateIndex = headers.findIndex(h => h.toLowerCase() === 'date');
+            const statusIndex = headers.findIndex(h => h.toLowerCase() === 'status');
+            const infoIndex = headers.findIndex(h => h.toLowerCase() === 'info');
+
+            if (nameIndex === -1 || phoneIndex === -1 || classIndex === -1) {
+              throw new Error('CSV must contain at least Name, Phone, and Class columns');
+            }
+
             const newStudents = [];
+            const errors = [];
 
             for (let i = 1; i < lines.length; i++) {
               if (!lines[i].trim()) continue;
 
-              const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-              if (values.length < headers.length) continue;
+              try {
+                // Use a proper CSV parser for the line
+                const values = parseCSVLine(lines[i]);
+                
+                // Skip if required fields are missing
+                if (!values[nameIndex] || !values[phoneIndex] || !values[classIndex]) {
+                  errors.push(`Skipping row ${i+1}: Missing required fields`);
+                  continue;
+                }
 
-              const student = {};
-              headers.forEach((header, index) => {
-                let value = values[index] ? values[index].trim().replace(/^"|"$/g, '') : '';
-                if (header === 'Date' && !value) value = new Date().toISOString().split('T')[0];
-                student[header.toLowerCase()] = value;
-              });
-
-              if (student.name && student.phone && student.class) {
                 newStudents.push({
-                  name: student.name,
-                  phone: student.phone,
-                  class: student.class,
-                  group: student.group || 'None',
-                  date: student.date || new Date().toISOString().split('T')[0],
-                  status: student.status || 'Called',
-                  info: student.info || ''
+                  name: values[nameIndex].trim(),
+                  phone: values[phoneIndex].trim(),
+                  class: values[classIndex].trim(),
+                  group: (groupIndex !== -1 && values[groupIndex]) ? values[groupIndex].trim() : 'None',
+                  date: (dateIndex !== -1 && values[dateIndex]) ? 
+                    values[dateIndex].trim() : 
+                    new Date().toISOString().split('T')[0],
+                  status: (statusIndex !== -1 && values[statusIndex]) ? 
+                    values[statusIndex].trim() : 
+                    'Not Checked',
+                  info: (infoIndex !== -1 && values[infoIndex]) ? values[infoIndex].trim() : ''
                 });
+              } catch (error) {
+                errors.push(`Error parsing row ${i+1}: ${error.message}`);
               }
             }
 
@@ -878,9 +1059,14 @@
               throw new Error('No valid student records found in CSV');
             }
 
+            if (errors.length > 0) {
+              console.warn('CSV import warnings:', errors);
+            }
+
             showConfirmation(
               'Import CSV',
-              `This will import ${newStudents.length} student records. Continue?`,
+              `This will import ${newStudents.length} student records${errors.length > 0 ? 
+                ` (${errors.length} rows had issues)` : ''}. Continue?`,
               'importCSV',
               newStudents
             );
@@ -932,6 +1118,7 @@
         const searchTerm = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
         const classValue = classFilter.value;
+        const groupValue = groupFilter.value;
 
         filteredStudents = students.filter(student => {
           const matchesSearch =
@@ -941,8 +1128,9 @@
 
           const matchesStatus = statusValue ? student.status === statusValue : true;
           const matchesClass = classValue ? student.class === classValue : true;
+          const matchesGroup = groupValue ? student.group === groupValue : true;
 
-          return matchesSearch && matchesStatus && matchesClass;
+          return matchesSearch && matchesStatus && matchesClass && matchesGroup;
         });
 
         currentPage = 1;
@@ -975,13 +1163,13 @@
           };
 
           const card = document.createElement('div');
-          card.className = `bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-all border-l-4 ${config.classes} border border-gray-200 dark:border-gray-700 overflow-hidden`;
+          card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden ${config.bg} ${config.text} border border-gray-200 dark:border-gray-700`;
 
           card.innerHTML = `
   <div class="p-4 text-sm">
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-base font-semibold truncate">${student.name}</h3>
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 ${config.iconColor}">
         ${config.icon}
         <span class="text-xs">${student.status}</span>
       </div>
@@ -989,27 +1177,27 @@
 
     <div class="space-y-1 mb-3">
       <div class="flex items-center gap-2">
-        <i class="fas fa-phone-alt text-gray-500 text-xs"></i>
-        <a href="tel:${student.phone}" class="hover:text-blue-600 hover:underline">${student.phone}</a>
+        <i class="fas fa-phone-alt ${config.iconColor} text-xs"></i>
+        <a href="tel:${student.phone}" class="hover:underline">${student.phone}</a>
       </div>
       <div class="flex items-center gap-2">
-        <i class="fas fa-graduation-cap text-gray-500 text-xs"></i>
+        <i class="fas fa-graduation-cap ${config.iconColor} text-xs"></i>
         <span>Class ${student.class}${student.group !== 'None' ? ` (${student.group})` : ''}</span>
       </div>
       <div class="flex items-center gap-2">
-        <i class="fas fa-calendar-day text-gray-500 text-xs"></i>
+        <i class="fas fa-calendar-day ${config.iconColor} text-xs"></i>
         <span>${formatDate(student.date)}</span>
       </div>
     </div>
 
     <div class="flex flex-wrap gap-1">
-      <button onclick="editStudent('${student.id}')" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs flex items-center gap-1">
+      <button onclick="editStudent('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
         <i class="fas fa-edit text-xs"></i> Edit
       </button>
-      <button onclick="deleteStudentPrompt('${student.id}')" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs flex items-center gap-1">
+      <button onclick="deleteStudentPrompt('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
         <i class="fas fa-trash text-xs"></i> Delete
       </button>
-      <a href="tel:${student.phone}" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded-md text-xs flex items-center gap-1">
+      <a href="tel:${student.phone}" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
         <i class="fas fa-phone text-xs"></i> Call
       </a>
     </div>
@@ -1076,10 +1264,11 @@
         statusChart = new Chart(statusCtx, {
           type: 'doughnut',
           data: {
-            labels: ['Called', 'Follow-Up Needed', 'Agreed', 'Paid', 'Not Interested'],
+            labels: ['Not Checked', 'Called', 'Follow-Up Needed', 'Agreed', 'Paid', 'Not Interested'],
             datasets: [{
-              data: [0, 0, 0, 0, 0],
+              data: [0, 0, 0, 0, 0, 0],
               backgroundColor: [
+                '#9ca3af',
                 '#a855f7',
                 '#eab308',
                 '#3b82f6',
@@ -1139,6 +1328,7 @@
 
         // Update status chart
         const statusCounts = [
+          filteredStudents.filter(s => s.status === 'Not Checked').length,
           filteredStudents.filter(s => s.status === 'Called').length,
           filteredStudents.filter(s => s.status === 'Follow-Up Needed').length,
           filteredStudents.filter(s => s.status === 'Agreed').length,
@@ -1204,6 +1394,7 @@
       searchInput.addEventListener('input', debounce(filterStudents, 300));
       statusFilter.addEventListener('change', filterStudents);
       classFilter.addEventListener('change', filterStudents);
+      groupFilter.addEventListener('change', filterStudents);
 
       prevPage.addEventListener('click', () => {
         if (currentPage > 1) {
@@ -1290,12 +1481,15 @@
       initCharts();
       fetchStudents();
 
-      // Set up real-time updates
       const channel = supabaseMain
         .channel('students_changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'studentsdemo' }, () => {
-          fetchStudents();
-        })
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'studentsdemo' },
+          (payload) => {
+            fetchStudents();
+          }
+        )
         .subscribe();
 
       // Expose functions to global scope for button onclick handlers
@@ -1330,6 +1524,61 @@
       };
     });
   </script>
+
+  <footer class="bg-white/30 dark:bg-gray-900/30 backdrop-blur-lg text-gray-800 dark:text-white mt-10 shadow-inner">
+    <div class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+
+      <!-- Logo & Title -->
+      <div class="flex flex-col items-center md:items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-400 dark:text-yellow-300"
+          fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
+        </svg>
+        <h2
+          class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500">
+          Admission Tracker Pro
+        </h2>
+        <p class="text-sm">Helping you stay organized and focused on student admissions.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-lg font-bold mb-2">Quick Links</h3>
+        <a href="#" class="hover:underline hover:text-blue-500">Dashboard</a>
+        <a href="#" class="hover:underline hover:text-blue-500">Features</a>
+        <a href="#" class="hover:underline hover:text-blue-500">Contact</a>
+      </div>
+
+      <!-- Contact & Social -->
+      <div class="flex flex-col items-center md:items-end gap-3">
+        <h3 class="text-lg font-bold">Connect</h3>
+        <div class="flex gap-4 text-xl">
+          <a href="https://wa.me/+8801840643946" target="_blank" class="hover:text-green-500 transition">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+          <a href="mailto:your@email.com" class="hover:text-red-500 transition">
+            <i class="fas fa-envelope"></i>
+          </a>
+          <a href="https://mustafaofficial.netlify.app" target="_blank" class="hover:text-blue-600 transition">
+            <i class="fab fa-facebook"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center py-4 border-t border-gray-300 dark:border-gray-700 text-sm">
+      &copy; <span id="year"></span> Admission Tracker Pro — Crafted with ❤️ by
+      <a href="https://wa.me/+8801840643946" class="text-blue-600 dark:text-yellow-400 font-semibold hover:underline"
+        target="_blank">Mustafa Rahman</a>
+    </div>
+
+    <script>
+      // Auto year update
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </footer>
+
 </body>
 
 </html>
