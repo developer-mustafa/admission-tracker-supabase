@@ -13,6 +13,7 @@
     }
   </script>
 
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
@@ -29,6 +30,12 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -82,15 +89,18 @@
       </div>
 
       <!-- Warning Notice - Now with highlighted white background -->
-      <div
-        class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-red-400 rounded-lg p-3 shadow-lg animate-pulse">
-        <div
-          class="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm sm:text-base">
-
-          <span class="text-center">⚠️ এটি রিয়েল সেন্সসিটিভ ডাটাবেজ ভিত্তিক সফটওয়্যার — তথ্য ডিলেট করা থেকে বিরত
-            থাকুন</span>
-        </div>
-      </div>
+      
+<div
+  class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-white dark:bg-gray-800 border-2 border-green-500 dark:border-green-400 rounded-lg p-3 shadow-lg">
+  <div class="flex items-center justify-center gap-2 text-green-700 dark:text-green-300 font-bold text-sm sm:text-base">
+    <span class="text-center">
+      ফোন কল করার সময় প্রফেশনালিজম বজায় রাখুন এবং 
+      <span class="text-blue-600 dark:text-blue-400">ফোন কল তারিখ</span>, 
+      <span class="text-yellow-600 dark:text-yellow-400">স্ট্যাটাস</span> ও 
+      <span class="text-pink-600 dark:text-pink-400">নোট</span> সংরক্ষণ করুন
+    </span>
+  </div>
+</div>
 
       <!-- Action Buttons -->
       <div class="flex flex-row items-center justify-center gap-3 w-full md:w-auto">
@@ -127,140 +137,165 @@
 
   <main class="container mx-auto px-4 py-4 space-y-6">
     <!-- Dashboard Summary -->
-    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full mr-4">
-          <i class="fas fa-users text-blue-600 dark:text-blue-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total</h3>
-          <p id="totalStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full mr-4">
-          <i class="fas fa-phone text-purple-600 dark:text-purple-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Called</h3>
-          <p id="calledStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-4">
-          <i class="fas fa-exclamation-circle text-yellow-600 dark:text-yellow-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Follow-Up</h3>
-          <p id="followupStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full mr-4">
-          <i class="fas fa-handshake text-green-600 dark:text-green-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Agreed</h3>
-          <p id="agreedStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full mr-4">
-          <i class="fas fa-ban text-red-600 dark:text-red-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Not Interested</h3>
-          <p id="noneStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
 
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-gray-200 dark:bg-gray-900 rounded-full mr-4">
-          <i class="fas fa-phone-slash text-gray-800 dark:text-gray-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-700 dark:text-gray-300 text-sm font-medium">Need Phone No.</h3>
-          <p id="needPhoneNumbers" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
-        </div>
+<section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-3">
+  <!-- Total Students -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-blue-400 dark:border-blue-600 transition-all duration-300 hover:bg-blue-50 dark:hover:bg-blue-950">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-blue-100 dark:bg-blue-800 rounded-full">
+        <i class="fas fa-users text-blue-600 dark:text-blue-300 text-2xl"></i>
       </div>
+      <p id="totalStudents" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Total</h3>
+  </div>
+
+  <!-- Called -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-purple-400 dark:border-purple-600 transition-all duration-300 hover:bg-purple-50 dark:hover:bg-purple-950">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-purple-100 dark:bg-purple-800 rounded-full">
+        <i class="fas fa-phone text-purple-600 dark:text-purple-300 text-2xl"></i>
+      </div>
+      <p id="calledStudents" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Called</h3>
+  </div>
+
+  <!-- Follow-Up -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-yellow-400 dark:border-yellow-600 transition-all duration-300 hover:bg-yellow-50 dark:hover:bg-yellow-950">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-yellow-100 dark:bg-yellow-800 rounded-full">
+        <i class="fas fa-exclamation-circle text-yellow-600 dark:text-yellow-300 text-2xl"></i>
+      </div>
+      <p id="followupStudents" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Follow-Up</h3>
+  </div>
+
+  <!-- Agreed -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-green-400 dark:border-green-600 transition-all duration-300 hover:bg-green-50 dark:hover:bg-green-950">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-green-100 dark:bg-green-800 rounded-full">
+        <i class="fas fa-handshake text-green-600 dark:text-green-300 text-2xl"></i>
+      </div>
+      <p id="agreedStudents" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Agreed</h3>
+  </div>
+
+  <!-- Not Interested -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-red-400 dark:border-red-600 transition-all duration-300 hover:bg-red-50 dark:hover:bg-red-950">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-red-100 dark:bg-red-800 rounded-full">
+        <i class="fas fa-ban text-red-600 dark:text-red-300 text-2xl"></i>
+      </div>
+      <p id="noneStudents" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Not Interested</h3>
+  </div>
+
+  <!-- Need Phone No. -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-gray-400 dark:border-gray-600 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-gray-300 dark:bg-gray-700 rounded-full">
+        <i class="fas fa-phone-slash text-gray-800 dark:text-white text-2xl"></i>
+      </div>
+      <p id="needPhoneNumbers" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Need Phone No.</h3>
+  </div>
+
+  <!-- Paid -->
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-md p-5 flex flex-col items-center justify-center border-2 border-emerald-400 dark:border-emerald-600 transition-all duration-300 hover:bg-emerald-50 dark:hover:bg-emerald-950">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 bg-emerald-100 dark:bg-emerald-800 rounded-full">
+        <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-300 text-2xl"></i>
+      </div>
+      <p id="paidStudents" class="text-3xl font-bold text-gray-800 dark:text-white">0</p>
+    </div>
+    <h3 class="mt-3 text-gray-600 dark:text-gray-400 text-sm font-semibold text-center">Paid</h3>
+  </div>
+</section>
 
 
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-emerald-100 dark:bg-emerald-900 rounded-full mr-4">
-          <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Paid</h3>
-          <p id="paidStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-    </section>
 
     <!-- Search & Filters Section -->
-    <section id="filterSection"
-      class="bg-white dark:bg-gray-800 rounded-xl shadow p-3 border border-gray-200 dark:border-gray-700 md:sticky md:top-0 z-10">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2">
+<section id="filterSection"
+  class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-200 dark:border-gray-700 md:sticky md:top-0 z-10 transition-all">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
 
-        <input id="searchInput" type="text" placeholder="Search students"
-          class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 md:col-span-1">
-
-        <select id="statusFilter"
-          class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
-          <option value="">All Statuses</option>
-          <option value="Not Checked">Not Checked</option>
-          <option value="Called">Called</option>
-          <option value="Follow-Up Needed">Follow-Up Needed</option>
-          <option value="Agreed">Agreed</option>
-          <option value="Paid">Paid</option>
-          <option value="Not Interested">Not Interested</option>
-          <option value="Need Phone-Number">Need Phone-Number</option>
-        </select>
-
-        <select id="classFilter"
-          class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
-          <option value="">All Classes</option>
-          <option value="6">Class 6</option>
-          <option value="7">Class 7</option>
-          <option value="8">Class 8</option>
-          <option value="9">Class 9</option>
-          <option value="10">Class 10</option>
-          <option value="11">Class 11</option>
-          <option value="12">Class 12</option>
-        </select>
-
-        <select id="groupFilter"
-          class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
-          <option value="">All Groups</option>
-          <option value="General">General</option>
-          <option value="Science">Science</option>
-          <option value="Arts">Arts</option>
-          <option value="Commerce">Commerce</option>
-        </select>
+    <!-- Search Input with Icon -->
+    <div class="relative md:col-span-1">
+      <input id="searchInput" type="text" placeholder="Search students..."
+        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-300" />
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 dark:text-gray-300">
+        <i class="fas fa-search"></i>
       </div>
+    </div>
 
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> students
-        </div>
-
-        <div class="flex space-x-2">
-          <button id="prevPage" class="px-4 py-2 border rounded-md disabled:opacity-50">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <span id="pageInfo" class="px-4 py-2">Page 1</span>
-          <button id="nextPage" class="px-4 py-2 border rounded-md disabled:opacity-50">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
+    <!-- Status Filter with Icons -->
+    <div class="relative">
+      <select id="statusFilter"
+        class="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 dark:text-gray-200 font-medium">
+        <option value="">All Statuses</option>
+        <option value="Not Checked">Not Checked</option>
+        <option value="Called">Called</option>
+        <option value="Follow-Up Needed">Follow-Up Needed</option>
+        <option value="Agreed">Agreed</option>
+        <option value="Paid">Paid</option>
+        <option value="Not Interested">Not Interested</option>
+        <option value="Need Phone-Number">Need Phone-Number</option>
+      </select>
+      <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-300">
+        <i class="fas fa-chevron-down text-sm"></i>
       </div>
-    </section>
+    </div>
+
+    <!-- Class Filter -->
+    <select id="classFilter"
+      class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      <option value="">All Classes</option>
+      <option value="6">Class 6</option>
+      <option value="7">Class 7</option>
+      <option value="8">Class 8</option>
+      <option value="9">Class 9</option>
+      <option value="10">Class 10</option>
+      <option value="11">Class 11</option>
+      <option value="12">Class 12</option>
+    </select>
+
+    <!-- Group Filter -->
+    <select id="groupFilter"
+      class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      <option value="">All Groups</option>
+      <option value="General">General</option>
+      <option value="Science">Science</option>
+      <option value="Arts">Arts</option>
+      <option value="Commerce">Commerce</option>
+    </select>
+  </div>
+
+  <!-- Footer Section -->
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="text-sm text-gray-600 dark:text-gray-300">
+      Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> students
+    </div>
+
+    <!-- Pagination Buttons -->
+    <div class="flex space-x-2">
+      <button id="prevPage"
+        class="px-4 py-2 border rounded-lg hover:bg-blue-500 hover:text-white transition disabled:opacity-50 dark:border-gray-500">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <span id="pageInfo" class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">Page 1</span>
+      <button id="nextPage"
+        class="px-4 py-2 border rounded-lg hover:bg-blue-500 hover:text-white transition disabled:opacity-50 dark:border-gray-500">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
 
     <!-- Student List Section -->
     <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700">
