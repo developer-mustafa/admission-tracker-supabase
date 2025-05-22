@@ -1,101 +1,118 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admission Tracker Pro</title>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com "></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class'
+      darkMode: 'class',
+      theme: {
+        extend: {
+          // You can add custom colors for groups here if needed globally
+          // colors: {
+          //   'group-science': '#3b82f6', // Example blue
+          //   'group-arts': '#ec4899',    // Example pink
+          //   'group-commerce': '#10b981', // Example emerald
+          //   'group-general': '#f59e0b',  // Example amber
+          // },
+        }
+      }
     }
   </script>
 
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js "></script>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css ">
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    .filter-transition {
-      transition: all 0.3s ease-in-out;
-      max-height: 0;
-      overflow: hidden;
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: "Hind Siliguri", sans-serif;
     }
 
-    .filter-transition.active {
-      max-height: 500px;
+    .custom-focus:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* Tailwind's blue-500 focus ring */
     }
 
-    .card-hover:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .dark ::-webkit-scrollbar-track { background: #2d3748; }
+    ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    .dark ::-webkit-scrollbar-thumb { background: #4a5568; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    .dark ::-webkit-scrollbar-thumb:hover { background: #718096; }
 
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printSection, #printSection * {
-        visibility: visible;
-      }
-      #printSection {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
+    /* For the angled ID */
+    .angled-id {
+      position: absolute;
+      top: 10px; /* Adjust as needed */
+      left: -25px; /* Adjust as needed, depends on text length */
+      transform: rotate(-45deg);
+      transform-origin: top left;
+      font-weight: 700; /* Bold */
+      padding: 2px 8px;
+      font-size: 0.6rem; /* Tiny */
+      line-height: 1;
+      white-space: nowrap;
+      opacity: 0.7;
+      border: 1px solid; /* Gets color from text color */
+      border-radius: 3px;
+      z-index: 10; /* Ensure it's above other elements if needed */
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-500">
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay"
-       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div
-      class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl flex items-center space-x-4 animate-pulse">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] hidden">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl flex items-center space-x-4">
       <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
       <span class="text-lg font-medium">Processing...</span>
     </div>
   </div>
 
-  <!-- Header -->
-  <header class="backdrop-blur-md bg-white/30 dark:bg-gray-900/30 text-gray-900 dark:text-white py-4 shadow-xl">
-    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-      <!-- Logo and Title -->
-      <div class="flex items-center gap-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-400 dark:text-yellow-300"
-             fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
-        </svg>
-        <h1
-          class="text-2xl md:text-3xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500">
-          Admission Tracker Pro
-        </h1>
+  <header
+    class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700">
+    <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-blue-500 dark:text-blue-400 drop-shadow" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
+          </svg>
+          <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 drop-shadow-sm">
+            Admission Tracker Pro
+          </h1>
+        </div>
+        <a href="https://wa.me/+8801840643946" target="_blank" class="group relative inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 dark:from-sky-600 dark:to-indigo-700 text-white text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+          <span class="absolute inset-0 bg-gradient-to-r from-sky-600 to-indigo-700 dark:from-sky-700 dark:to-indigo-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+          <span class="relative z-10 flex items-center gap-1.5">
+            <span class="text-xs">👨‍💻</span>
+            <span>Mustafa Rahman</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5 opacity-70 group-hover:translate-x-0.5 group-hover:opacity-100 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
+        </a>
       </div>
-
-      <!-- Right Controls -->
-      <div class="flex items-center gap-4">
-        <button id="openStudentPanel"
-                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition">
-          <i class="fas fa-plus"></i>
-          <span class="hidden md:inline">Add Student</span>
+      <div class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-red-50 dark:bg-red-900/30 border-2 border-red-500 dark:border-red-400 rounded-lg p-3 shadow-lg">
+        <div class="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm sm:text-base">
+          <span class="text-center">⚠️ এটি রিয়েল সেন্সসিটিভ ডাটাবেজ ভিত্তিক সফটওয়্যার — তথ্য ডিলেট করা থেকে বিরত থাকুন</span>
+        </div>
+      </div>
+      <div class="flex flex-row items-center justify-center gap-3 w-full md:w-auto">
+        <button id="openStudentPanel" class="relative overflow-hidden flex items-center gap-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-medium custom-focus">
+          <span class="absolute inset-0 bg-gradient-to-r from-white/20 via-white/0 to-white/20 opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full"></span>
+          <span class="relative z-10 flex items-center gap-2">
+            <i class="fas fa-plus text-sm transition-transform hover:scale-110"></i>
+            <span class="text-sm tracking-wide">Add Student</span>
+          </span>
         </button>
-        <div id="darkModeToggle"
-             class="w-14 h-8 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer transition-all duration-300">
-          <div id="toggleThumb"
-               class="bg-white dark:bg-yellow-400 w-6 h-6 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center">
+        <div id="darkModeToggle" class="w-16 h-9 flex items-center bg-gray-300 dark:bg-gray-700 rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner custom-focus" tabindex="0" aria-label="Toggle dark mode">
+          <div id="toggleThumb" class="bg-white dark:bg-yellow-400 w-7 h-7 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center">
             <span id="toggleIcon" class="text-sm">🌙</span>
           </div>
         </div>
@@ -103,1176 +120,562 @@
     </div>
   </header>
 
-  <main class="container mx-auto px-4 py-6 space-y-6">
-
-    <!-- Dashboard Summary -->
+  <main class="container mx-auto px-4 py-6 space-y-8">
     <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      <!-- Total -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full mr-4">
-          <i class="fas fa-users text-blue-600 dark:text-blue-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total</h3>
-          <p id="totalStudents" class="text-2xl font-bold">0</p>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg hover:scale-[1.02]">
+        <div class="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full mr-4"><i class="fas fa-users text-blue-600 dark:text-blue-300 text-xl"></i></div>
+        <div><h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total</h3><p id="totalStudents" class="text-2xl font-bold text-gray-700 dark:text-gray-100">0</p></div>
       </div>
-
-      <!-- Called -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full mr-4">
-          <i class="fas fa-phone text-purple-600 dark:text-purple-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Called</h3>
-          <p id="calledStudents" class="text-2xl font-bold">0</p>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg hover:scale-[1.02]">
+        <div class="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-full mr-4"><i class="fas fa-phone text-purple-600 dark:text-purple-300 text-xl"></i></div>
+        <div><h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Called</h3><p id="calledStudents" class="text-2xl font-bold text-gray-700 dark:text-gray-100">0</p></div>
       </div>
-
-      <!-- Follow-Up -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-4">
-          <i class="fas fa-exclamation-circle text-yellow-600 dark:text-yellow-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Follow-Up</h3>
-          <p id="followupStudents" class="text-2xl font-bold">0</p>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg hover:scale-[1.02]">
+        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-full mr-4"><i class="fas fa-exclamation-circle text-yellow-600 dark:text-yellow-300 text-xl"></i></div>
+        <div><h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Follow-Up</h3><p id="followupStudents" class="text-2xl font-bold text-gray-700 dark:text-gray-100">0</p></div>
       </div>
-
-      <!-- Agreed -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full mr-4">
-          <i class="fas fa-handshake text-green-600 dark:text-green-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Agreed</h3>
-          <p id="agreedStudents" class="text-2xl font-bold">0</p>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg hover:scale-[1.02]">
+        <div class="p-3 bg-green-100 dark:bg-green-900/50 rounded-full mr-4"><i class="fas fa-handshake text-green-600 dark:text-green-300 text-xl"></i></div>
+        <div><h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Agreed</h3><p id="agreedStudents" class="text-2xl font-bold text-gray-700 dark:text-gray-100">0</p></div>
       </div>
-
-      <!-- Not Interested -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full mr-4">
-          <i class="fas fa-ban text-red-600 dark:text-red-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Not Interested</h3>
-          <p id="noneStudents" class="text-2xl font-bold">0</p>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg hover:scale-[1.02]">
+        <div class="p-3 bg-red-100 dark:bg-red-900/50 rounded-full mr-4"><i class="fas fa-ban text-red-600 dark:text-red-300 text-xl"></i></div>
+        <div><h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Not Interested</h3><p id="noneStudents" class="text-2xl font-bold text-gray-700 dark:text-gray-100">0</p></div>
       </div>
-
-      <!-- Paid -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
-        <div class="p-3 bg-emerald-100 dark:bg-emerald-900 rounded-full mr-4">
-          <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Paid</h3>
-          <p id="paidStudents" class="text-2xl font-bold">0</p>
-        </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg hover:scale-[1.02]">
+        <div class="p-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-full mr-4"><i class="fas fa-check-circle text-emerald-600 dark:text-emerald-300 text-xl"></i></div>
+        <div><h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Paid</h3><p id="paidStudents" class="text-2xl font-bold text-gray-700 dark:text-gray-100">0</p></div>
       </div>
     </section>
 
-    <!-- Search & Filters -->
-    <section id="filterSection"
-             class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700 md:sticky md:top-0 z-20">
-      <div class="md:hidden flex justify-between items-center mb-4">
-        <input id="searchInputMobile" type="text" placeholder="Search students..."
-               class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 w-full">
-        <button id="filterToggle"
-                class="ml-2 p-3 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-          <i id="filterIcon" class="fas fa-filter"></i>
-        </button>
-      </div>
-
-      <input id="searchInputDesktop" type="text" placeholder="Search students..."
-             class="hidden md:block p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 w-full mb-4">
-
-      <div id="filterControls"
-           class="filter-transition md:grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 active">
-        <select id="statusFilter"
-                class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
+    <section id="filterSection" class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-200 dark:border-gray-700 md:sticky md:top-[calc(var(--header-height,80px)+1rem)] z-40">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <input id="searchInput" type="text" placeholder="Search by name, phone, info, ID..." class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Search students">
+        <select id="statusFilter" class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Filter by status">
           <option value="">All Statuses</option>
-          <option value="Not Checked">Not Checked</option>
-          <option value="Called">Called</option>
-          <option value="Follow-Up Needed">Follow-Up Needed</option>
-          <option value="Agreed">Agreed</option>
-          <option value="Paid">Paid</option>
-          <option value="Not Interested">Not Interested</option>
+          <option value="Not Checked">Not Checked</option><option value="Called">Called</option><option value="Follow-Up Needed">Follow-Up Needed</option><option value="Agreed">Agreed</option><option value="Paid">Paid</option><option value="Not Interested">Not Interested</option>
         </select>
-
-        <select id="classFilter"
-                class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
+        <select id="classFilter" class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Filter by class">
           <option value="">All Classes</option>
-          <option value="6">Class 6</option>
-          <option value="7">Class 7</option>
-          <option value="8">Class 8</option>
-          <option value="9">Class 9</option>
-          <option value="10">Class 10</option>
-          <option value="11">Class 11</option>
-          <option value="12">Class 12</option>
+          <option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option><option value="11">Class 11</option><option value="12">Class 12</option>
         </select>
-
-        <select id="groupFilter"
-                class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600">
+        <select id="groupFilter" class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Filter by group">
           <option value="">All Groups</option>
-          <option value="General">General</option>
-          <option value="Science">Science</option>
-          <option value="Arts">Arts</option>
-          <option value="Commerce">Commerce</option>
+          <option value="General">General</option><option value="Science">Science</option><option value="Arts">Arts</option><option value="Commerce">Commerce</option>
         </select>
       </div>
-
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> students
-        </div>
-        <div class="flex space-x-2">
-          <button id="prevPage" class="px-4 py-2 border rounded-md disabled:opacity-50">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <span id="pageInfo" class="px-4 py-2">Page 1</span>
-          <button id="nextPage" class="px-4 py-2 border rounded-md disabled:opacity-50">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div class="text-sm text-gray-600 dark:text-gray-400">Showing <span id="showingCount" class="font-semibold">0</span> of <span id="totalCount" class="font-semibold">0</span> students</div>
+        <div class="flex space-x-2"><button id="prevPage" class="px-4 py-2 border rounded-md disabled:opacity-50 custom-focus hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button><span id="pageInfo" class="px-4 py-2 text-sm">Page 1 of 1</span><button id="nextPage" class="px-4 py-2 border rounded-md disabled:opacity-50 custom-focus hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Next page"><i class="fas fa-chevron-right"></i></button></div>
       </div>
     </section>
 
-    <!-- Student List -->
-    <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700">
-      <div id="studentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="col-span-full text-center py-10">
-          <i class="fas fa-user-graduate text-4xl text-gray-400 mb-4"></i>
-          <p class="text-gray-500 dark:text-gray-400">Loading students...</p>
-        </div>
+    <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700 min-h-[300px]">
+      <div id="studentList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div id="initialLoadingMessage" class="col-span-full text-center py-10"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div><p class="text-gray-500 dark:text-gray-400">Loading students...</p></div>
       </div>
     </section>
 
-    <!-- Analytics -->
     <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-semibold mb-6">Admission Analytics</h2>
+      <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Admission Analytics</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold mb-4">Students by Class</h3>
-          <div class="h-[300px]">
-            <canvas id="classChart"></canvas>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold mb-4">Students by Status</h3>
-          <div class="h-[300px]">
-            <canvas id="statusChart"></canvas>
-          </div>
-        </div>
+        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"><h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Students by Class</h3><div class="h-[300px] w-full"><canvas id="classChart"></canvas></div></div>
+        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"><h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Students by Status</h3><div class="h-[300px] w-full"><canvas id="statusChart"></canvas></div></div>
       </div>
-      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold mb-4">Admission Progress</h3>
-        <div class="h-[300px]">
-          <canvas id="progressChart"></canvas>
-        </div>
-      </div>
+      <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"><h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Admission Progress Over Time</h3><div class="h-[300px] w-full"><canvas id="progressChart"></canvas></div></div>
     </section>
 
-    <!-- Data Management -->
     <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-semibold mb-4">Data Management</h2>
-      <div class="flex flex-wrap gap-4">
-        <button id="exportCSV"
-                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition flex items-center gap-2">
-          <i class="fas fa-file-csv"></i> Export CSV
-        </button>
-        <button id="exportPDF"
-                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition flex items-center gap-2">
-          <i class="fas fa-file-pdf"></i> Export PDF
-        </button>
-        <label for="importCSV"
-               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center gap-2 cursor-pointer">
-          <i class="fas fa-file-import"></i> Import CSV
-          <input type="file" id="importCSV" accept=".csv, text/csv" class="hidden">
-        </label>
-        <button id="backupJSON"
-                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition flex items-center gap-2">
-          <i class="fas fa-file-export"></i> Backup JSON
-        </button>
-        <label for="restoreJSON"
-               class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition flex items-center gap-2 cursor-pointer">
-          <i class="fas fa-file-import"></i> Restore JSON
-          <input type="file" id="restoreJSON" accept=".json,application/json" class="hidden">
-        </label>
+      <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-gray-800 dark:text-white">Data Management</h2></div>
+      <div class="flex flex-wrap gap-3">
+        <button id="exportCSV" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition flex items-center gap-2 custom-focus"><i class="fas fa-file-csv"></i> Export CSV</button>
+        <button id="exportPDF" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition flex items-center gap-2 custom-focus"><i class="fas fa-file-pdf"></i> Export PDF</button>
+        <label for="importCSV" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center gap-2 cursor-pointer custom-focus"><i class="fas fa-file-import"></i> Import CSV<input type="file" id="importCSV" accept=".csv, text/csv" class="hidden"></label>
+        <button id="backupJSON" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition flex items-center gap-2 custom-focus"><i class="fas fa-file-export"></i> Backup JSON</button>
+        <label for="restoreJSON" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition flex items-center gap-2 cursor-pointer custom-focus"><i class="fas fa-file-import"></i> Restore JSON<input type="file" id="restoreJSON" accept=".json,application/json" class="hidden"></label>
       </div>
     </section>
   </main>
 
-  <!-- Student Panel Modal -->
-  <div id="studentPanelModal"
-       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-3xl mx-4 border border-gray-200 dark:border-gray-700">
-      <div class="flex justify-between items-center mb-6">
-        <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 dark:text-white">Add Student</h2>
-        <button id="closeStudentPanel"
-                class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xl">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <form id="studentForm" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Name -->
-        <div>
-          <label for="name" class="block text-sm font-medium mb-1 dark:text-gray-200">Name*</label>
-          <input type="text" id="name" required
-                 class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-        </div>
-        <!-- Phone -->
-        <div>
-          <label for="phone" class="block text-sm font-medium mb-1 dark:text-gray-200">Phone*</label>
-          <input type="tel" id="phone" required
-                 class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-        </div>
-        <!-- Class -->
-        <div>
-          <label for="class" class="block text-sm font-medium mb-1 dark:text-gray-200">Class*</label>
-          <select id="class" required
-                  class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="">Select Class</option>
-            <option value="6">Class 6</option>
-            <option value="7">Class 7</option>
-            <option value="8">Class 8</option>
-            <option value="9">Class 9</option>
-            <option value="10">Class 10</option>
-            <option value="11">Class 11</option>
-            <option value="12">Class 12</option>
-          </select>
-        </div>
-        <!-- Group -->
-        <div>
-          <label for="group" class="block text-sm font-medium mb-1 dark:text-gray-200">Group</label>
-          <select id="group"
-                  class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="None">None</option>
-            <option value="General">General</option>
-            <option value="Science">Science</option>
-            <option value="Arts">Arts</option>
-            <option value="Commerce">Commerce</option>
-          </select>
-        </div>
-        <!-- Date -->
-        <div>
-          <label for="date" class="block text-sm font-medium mb-1 dark:text-gray-200">Date*</label>
-          <input type="date" id="date" required
-                 class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-        </div>
-        <!-- Status -->
-        <div>
-          <label for="status" class="block text-sm font-medium mb-1 dark:text-gray-200">Status*</label>
-          <select id="status" required
-                  class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="Not Checked">Not Checked</option>
-            <option value="Called">Called</option>
-            <option value="Follow-Up Needed">Follow-Up Needed</option>
-            <option value="Agreed">Agreed</option>
-            <option value="Paid">Paid</option>
-            <option value="Not Interested">Not Interested</option>
-          </select>
-        </div>
-        <!-- Additional Info -->
-        <div class="sm:col-span-2">
-          <label for="info" class="block text-sm font-medium mb-1 dark:text-gray-200">Additional Info</label>
-          <textarea id="info" rows="3"
-                    class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-        </div>
-        <!-- Submit Button -->
-        <div class="sm:col-span-2">
-          <button type="submit"
-                  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition flex items-center justify-center gap-2 text-lg">
-            <i class="fas fa-save"></i> Save Student
-          </button>
-        </div>
+  <div id="studentPanelModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] hidden p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-3xl mx-auto border border-gray-300 dark:border-gray-700 shadow-2xl max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 rounded-t-xl"><h2 id="modalTitle" class="text-2xl font-bold text-gray-800 dark:text-white">Add Student</h2><button id="closeStudentPanel" class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 text-2xl custom-focus" aria-label="Close panel"><i class="fas fa-times"></i></button></div>
+      <form id="studentForm" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 p-6 overflow-y-auto">
+        <div class="sm:col-span-1"><label for="name" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Name*</label><input type="text" id="name" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"></div>
+        <div class="sm:col-span-1"><label for="phone" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Phone*</label><input type="tel" id="phone" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"></div>
+        <div class="sm:col-span-1"><label for="class" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Class*</label><select id="class" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"><option value="">Select Class</option><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option><option value="11">Class 11</option><option value="12">Class 12</option></select></div>
+        <div class="sm:col-span-1"><label for="group" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Group</label><select id="group" class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white"><option value="None">None</option><option value="General">General</option><option value="Science">Science</option><option value="Arts">Arts</option><option value="Commerce">Commerce</option></select></div>
+        <div class="sm:col-span-1"><label for="date" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Date Added*</label><input type="date" id="date" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"></div>
+        <div class="sm:col-span-1"><label for="status" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Status*</label><select id="status" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"><option value="Not Checked">Not Checked</option><option value="Called">Called</option><option value="Follow-Up Needed">Follow-Up Needed</option><option value="Agreed">Agreed</option><option value="Paid">Paid</option><option value="Not Interested">Not Interested</option></select></div>
+        <div class="col-span-2"><label for="info" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Additional Info</label><textarea id="info" rows="3" class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea></div>
+        <div class="col-span-2 mt-2"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition flex items-center justify-center gap-2 text-lg custom-focus"><i class="fas fa-save"></i> <span id="saveButtonText">Save Student</span></button></div>
       </form>
     </div>
   </div>
 
-  <!-- Confirmation Modal -->
-  <div id="confirmModal"
-       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4 border border-gray-200 dark:border-gray-700">
-      <h2 id="confirmModalTitle" class="text-xl font-bold mb-4">Confirm Action</h2>
-      <p id="confirmModalMessage" class="mb-6">Are you sure you want to perform this action?</p>
-      <div class="flex justify-end gap-4">
-        <button id="cancelConfirm"
-                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition">
-          Cancel
-        </button>
-        <button id="proceedConfirm"
-                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition">
-          Confirm
-        </button>
-      </div>
-    </div>
+  <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[70] hidden p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-auto border border-gray-300 dark:border-gray-700 shadow-2xl"><h2 id="confirmModalTitle" class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Confirm Action</h2><p id="confirmModalMessage" class="mb-6 text-gray-600 dark:text-gray-300">Are you sure?</p><div class="flex justify-end gap-4"><button id="cancelConfirm" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md transition custom-focus dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500">Cancel</button><button id="proceedConfirm" class="px-4 py-2 text-white rounded-md transition custom-focus">Confirm</button></div></div>
   </div>
 
-  <!-- Hidden Print Div -->
-  <div id="printSection" style="display: none;"></div>
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-[100] space-y-2"></div>
 
-  <!-- Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const supabaseUrl = 'https://erihbeinkymnymncnawm.supabase.co ';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaWhiZWlua3ltbnltbmNuYXdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzEwMzUsImV4cCI6MjA2MjM0NzAzNX0.xhE0_RbBQ9qQcYHa5sv-S9-cUolJruo0Km3oud-GtOM';
-      const supabaseMain = supabase.createClient(supabaseUrl, supabaseKey);
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const supabaseUrl = 'https://erihbeinkymnymncnawm.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaWhiZWlua3ltbnltbmNuYXdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NzEwMzUsImV4cCI6MjA2MjM0NzAzNX0.xhE0_RbBQ9qQcYHa5sv-S9-cUolJruo0Km3oud-GtOM';
+  const supabaseMain = supabase.createClient(supabaseUrl, supabaseKey);
 
-      let students = [];
-      let filteredStudents = [];
-      let currentPage = 1;
-      const studentsPerPage = 12;
-      let currentEditingId = null;
-      let pendingAction = null;
-      let pendingActionData = null;
+  let students = [];
+  let filteredStudents = [];
+  let currentPage = 1;
+  const studentsPerPage = 9;
+  let currentEditingId = null;
+  let pendingAction = null;
+  let pendingActionData = null;
+  let classChart, statusChart, progressChart;
 
-      // DOM Elements
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const studentPanelModal = document.getElementById('studentPanelModal');
-      const openStudentPanel = document.getElementById('openStudentPanel');
-      const closeStudentPanel = document.getElementById('closeStudentPanel');
-      const modalTitle = document.getElementById('modalTitle');
-      const studentForm = document.getElementById('studentForm');
-      const studentList = document.getElementById('studentList');
-      const searchInputMobile = document.getElementById('searchInputMobile');
-      const searchInputDesktop = document.getElementById('searchInputDesktop');
-      const statusFilter = document.getElementById('statusFilter');
-      const classFilter = document.getElementById('classFilter');
-      const groupFilter = document.getElementById('groupFilter');
-      const prevPage = document.getElementById('prevPage');
-      const nextPage = document.getElementById('nextPage');
-      const pageInfo = document.getElementById('pageInfo');
-      const showingCount = document.getElementById('showingCount');
-      const totalCount = document.getElementById('totalCount');
-      const confirmModal = document.getElementById('confirmModal');
-      const confirmModalTitle = document.getElementById('confirmModalTitle');
-      const confirmModalMessage = document.getElementById('confirmModalMessage');
-      const cancelConfirm = document.getElementById('cancelConfirm');
-      const proceedConfirm = document.getElementById('proceedConfirm');
-      const exportCSV = document.getElementById('exportCSV');
-      const exportPDF = document.getElementById('exportPDF');
-      const backupJSON = document.getElementById('backupJSON');
-      const importCSV = document.getElementById('importCSV');
-      const restoreJSON = document.getElementById('restoreJSON');
-      const darkModeToggle = document.getElementById('darkModeToggle');
-      const toggleThumb = document.getElementById('toggleThumb');
-      const toggleIcon = document.getElementById('toggleIcon');
-      const filterSection = document.getElementById('filterSection');
-      const filterToggle = document.getElementById('filterToggle');
-      const filterControls = document.getElementById('filterControls');
-      const filterIcon = document.getElementById('filterIcon');
-      const printSection = document.getElementById('printSection');
+  const statusConfig = {
+    "Not Checked": { icon: '<i class="fas fa-question-circle"></i>', gradient: 'from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800', badgeBg: 'bg-gray-400 dark:bg-gray-500', text: 'text-gray-700 dark:text-gray-200', iconColor: 'text-gray-500 dark:text-gray-400', pdfColor: "#95a5a6" },
+    "Called": { icon: '<i class="fas fa-phone-alt"></i>', gradient: 'from-purple-100 to-purple-200 dark:from-purple-800 dark:to-purple-900', badgeBg: 'bg-purple-500 dark:bg-purple-600', text: 'text-purple-700 dark:text-purple-200', iconColor: 'text-purple-500 dark:text-purple-300', pdfColor: "#8e44ad" },
+    "Follow-Up Needed": { icon: '<i class="fas fa-exclamation-circle"></i>', gradient: 'from-yellow-100 to-yellow-200 dark:from-yellow-800 dark:to-yellow-900', badgeBg: 'bg-yellow-500 dark:bg-yellow-600', text: 'text-yellow-700 dark:text-yellow-200', iconColor: 'text-yellow-500 dark:text-yellow-300', pdfColor: "#f39c12" },
+    "Agreed": { icon: '<i class="fas fa-handshake"></i>', gradient: 'from-blue-100 to-blue-200 dark:from-blue-800 dark:to-blue-900', badgeBg: 'bg-blue-500 dark:bg-blue-600', text: 'text-blue-700 dark:text-blue-200', iconColor: 'text-blue-500 dark:text-blue-300', pdfColor: "#2980b9" },
+    "Paid": { icon: '<i class="fas fa-check-circle"></i>', gradient: 'from-green-100 to-green-200 dark:from-green-800 dark:to-green-900', badgeBg: 'bg-green-500 dark:bg-green-600', text: 'text-green-700 dark:text-green-200', iconColor: 'text-green-500 dark:text-green-300', pdfColor: "#27ae60" },
+    "Not Interested": { icon: '<i class="fas fa-ban"></i>', gradient: 'from-red-100 to-red-200 dark:from-red-800 dark:to-red-900', badgeBg: 'bg-red-500 dark:bg-red-600', text: 'text-red-700 dark:text-red-200', iconColor: 'text-red-500 dark:text-red-300', pdfColor: "#c0392b" }
+  };
 
-      // Dashboard Elements
-      const dashboardElements = {
-        total: document.getElementById('totalStudents'),
-        called: document.getElementById('calledStudents'),
-        followup: document.getElementById('followupStudents'),
-        agreed: document.getElementById('agreedStudents'),
-        none: document.getElementById('noneStudents'),
-        paid: document.getElementById('paidStudents')
-      };
+  const groupConfig = {
+    "Science": { text: 'text-blue-700 dark:text-blue-300', badgeBg: 'bg-blue-100 dark:bg-blue-900/60', icon: '<i class="fas fa-flask"></i>' },
+    "Arts": { text: 'text-pink-700 dark:text-pink-300', badgeBg: 'bg-pink-100 dark:bg-pink-900/60', icon: '<i class="fas fa-paint-brush"></i>' },
+    "Commerce": { text: 'text-emerald-700 dark:text-emerald-300', badgeBg: 'bg-emerald-100 dark:bg-emerald-900/60', icon: '<i class="fas fa-chart-line"></i>' },
+    "General": { text: 'text-amber-700 dark:text-amber-300', badgeBg: 'bg-amber-100 dark:bg-amber-900/60', icon: '<i class="fas fa-users"></i>' },
+    "None": { text: 'text-gray-600 dark:text-gray-400', badgeBg: 'bg-gray-100 dark:bg-gray-700/60', icon: '<i class="fas fa-circle-notch"></i>' }
+  };
 
-      // Status Config
-      const statusConfig = {
-        "Not Checked": { icon: '<i class="fas fa-question-circle mr-1"></i>', pdfColor: '#9ca3af' },
-        "Called": { icon: '<i class="fas fa-phone-alt mr-1"></i>', pdfColor: '#a855f7' },
-        "Follow-Up Needed": { icon: '<i class="fas fa-exclamation-circle mr-1"></i>', pdfColor: '#eab308' },
-        "Agreed": { icon: '<i class="fas fa-handshake mr-1"></i>', pdfColor: '#3b82f6' },
-        "Paid": { icon: '<i class="fas fa-check-circle mr-1"></i>', pdfColor: '#10b981' },
-        "Not Interested": { icon: '<i class="fas fa-ban mr-1"></i>', pdfColor: '#ef4444' }
-      };
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const studentPanelModal = document.getElementById('studentPanelModal');
+  const openStudentPanel = document.getElementById('openStudentPanel');
+  const closeStudentPanel = document.getElementById('closeStudentPanel');
+  const modalTitle = document.getElementById('modalTitle');
+  const studentForm = document.getElementById('studentForm');
+  const studentList = document.getElementById('studentList');
+  const initialLoadingMessage = document.getElementById('initialLoadingMessage');
+  const searchInput = document.getElementById('searchInput');
+  const statusFilter = document.getElementById('statusFilter');
+  const classFilter = document.getElementById('classFilter');
+  const groupFilter = document.getElementById('groupFilter');
+  const prevPage = document.getElementById('prevPage');
+  const nextPage = document.getElementById('nextPage');
+  const pageInfo = document.getElementById('pageInfo');
+  const showingCount = document.getElementById('showingCount');
+  const totalCount = document.getElementById('totalCount');
+  const saveButtonText = document.getElementById('saveButtonText');
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmModalTitle = document.getElementById('confirmModalTitle');
+  const confirmModalMessage = document.getElementById('confirmModalMessage');
+  const cancelConfirm = document.getElementById('cancelConfirm');
+  const proceedConfirm = document.getElementById('proceedConfirm');
+  const exportCSVBtn = document.getElementById('exportCSV');
+  const exportPDFBtn = document.getElementById('exportPDF');
+  const backupJSONBtn = document.getElementById('backupJSON');
+  const importCSVInput = document.getElementById('importCSV');
+  const restoreJSONInput = document.getElementById('restoreJSON');
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const toggleThumb = document.getElementById('toggleThumb');
+  const toggleIcon = document.getElementById('toggleIcon');
+  const toastContainer = document.getElementById('toastContainer');
+  const dashboardElements = {
+    total: document.getElementById('totalStudents'), called: document.getElementById('calledStudents'),
+    followup: document.getElementById('followupStudents'), agreed: document.getElementById('agreedStudents'),
+    none: document.getElementById('noneStudents'), paid: document.getElementById('paidStudents')
+  };
 
-      // Utility Functions
-      const showLoading = () => loadingOverlay.classList.remove('hidden');
-      const hideLoading = () => loadingOverlay.classList.add('hidden');
+  const showLoading = (text = "Processing...") => { loadingOverlay.querySelector('span').textContent = text; loadingOverlay.classList.remove('hidden'); };
+  const hideLoading = () => { loadingOverlay.classList.add('hidden'); };
+  const showToast = (message, type = 'info', duration = 3000) => { /* ... (showToast implementation from previous response, ensure it's here) ... */ 
+    const toast = document.createElement('div');
+    const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+    const colors = { success: 'bg-green-500 dark:bg-green-600', error: 'bg-red-500 dark:bg-red-600', warning: 'bg-yellow-500 dark:bg-yellow-600', info: 'bg-blue-500 dark:bg-blue-600' };
+    toast.className = `flex items-center gap-3 p-3 rounded-lg shadow-xl text-white ${colors[type]} transition-all duration-300 transform opacity-0 translate-y-2`;
+    toast.innerHTML = `<i class="fas ${icons[type]} text-lg"></i><span class="text-sm font-medium">${message}</span><button class="ml-auto text-white/70 hover:text-white focus:outline-none">&times;</button>`;
+    toastContainer.appendChild(toast);
+    setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-2'); toast.classList.add('opacity-100', 'translate-y-0'); }, 10);
+    const closeButton = toast.querySelector('button');
+    let timeoutId;
+    const removeToast = () => {
+        toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => { toast.remove(); clearTimeout(timeoutId); }, 300);
+    };
+    closeButton.addEventListener('click', removeToast);
+    if (duration) { timeoutId = setTimeout(removeToast, duration); }
+  };
+  const debounce = (func, wait) => { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); }; };
+  const formatDate = (dateString) => { if (!dateString) return 'N/A'; const date = new Date(dateString); if (isNaN(date)) return 'Invalid Date'; const userTimezoneOffset = date.getTimezoneOffset() * 60000; const localDate = new Date(date.getTime() + userTimezoneOffset); return localDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
+  const getCurrentDateInput = () => new Date().toISOString().split('T')[0];
+  const validatePhone = (phone) => /^[0-9+()\s-]{10,18}$/.test(phone);
+  const showConfirmation = (title, message, action, data = null, confirmBtnClass = 'bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800') => { pendingAction = action; pendingActionData = data; confirmModalTitle.textContent = title; confirmModalMessage.textContent = message; proceedConfirm.className = `px-4 py-2 text-white rounded-md transition custom-focus ${confirmBtnClass}`; confirmModal.classList.remove('hidden'); };
+  const hexToRgb = (hex) => { if (!hex || typeof hex !== 'string') return [0,0,0]; const bigint = parseInt(hex.replace('#', ''), 16); return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255]; };
+  const parseCSVLine = (line) => { const p = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g; const v = []; let m; while ((m = p.exec(line)) !== null) { let val = m[0]; if (val.startsWith(',')) val = val.substring(1); if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1).replace(/""/g, '"'); v.push(val.trim()); } return v; };
 
-      const showToast = (message, type = 'info') => {
-        const toast = document.createElement('div');
-        const colors = {
-          success: 'bg-green-500',
-          error: 'bg-red-500',
-          warning: 'bg-yellow-500',
-          info: 'bg-blue-500'
-        };
-        toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 opacity-0 flex items-center gap-2`;
-        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i><span>${message}</span>`;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.classList.replace('opacity-0', 'opacity-100'), 10);
-        setTimeout(() => {
-          toast.classList.replace('opacity-100', 'opacity-0');
-          setTimeout(() => toast.remove(), 300);
-        }, 3000);
-      };
+  const fetchStudents = async () => { /* ... (fetchStudents implementation - ensure it calls applyFiltersAndRender) ... */
+    if (!initialLoadingMessage.classList.contains('hidden')) { initialLoadingMessage.classList.remove('hidden'); } 
+    else if (studentList.innerHTML === '') { studentList.innerHTML = `<div class="col-span-full text-center py-10"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div><p class="text-gray-500 dark:text-gray-400">Loading students...</p></div>`; }
+    showLoading("Fetching students...");
+    try {
+      const { data, error } = await supabaseMain.from('studentsdemo').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      students = data || [];
+      applyFiltersAndRender();
+      localStorage.setItem('admissionTrackerData', JSON.stringify(students));
+    } catch (error) {
+      console.error('Error fetching students:', error); showToast('Failed to load students. Trying local cache.', 'error');
+      const localData = localStorage.getItem('admissionTrackerData');
+      if (localData) { students = JSON.parse(localData); applyFiltersAndRender(); } 
+      else { studentList.innerHTML = `<div class="col-span-full text-center py-10"><i class="fas fa-exclamation-triangle text-3xl text-red-500 mb-3"></i><p class="text-red-500 dark:text-red-400">Could not fetch students.</p></div>`; }
+    } finally { hideLoading(); if (!initialLoadingMessage.classList.contains('hidden')) { initialLoadingMessage.classList.add('hidden'); } }
+  };
+  const saveStudent = async (studentData, id = null) => { /* ... (saveStudent implementation) ... */
+    showLoading(id ? "Updating student..." : "Adding student...");
+    try {
+      if (!studentData.name || !studentData.phone || !studentData.class || !studentData.date) throw new Error('Please fill all required fields (*).');
+      if (!validatePhone(studentData.phone)) throw new Error('Please enter a valid phone number.');
+      let result, opType;
+      if (id) { const { data, error } = await supabaseMain.from('studentsdemo').update(studentData).eq('id', id).select(); if (error) throw error; result = data[0]; opType = 'updated'; }
+      else { const { data, error } = await supabaseMain.from('studentsdemo').insert([{ ...studentData, created_at: new Date().toISOString() }]).select(); if (error) throw error; result = data[0]; opType = 'added'; }
+      showToast(`Student ${opType} successfully!`, 'success');
+      // Realtime should handle update, but for immediate UI:
+      if (id) { const i = students.findIndex(s => s.id === id); if (i !== -1) students[i] = result; } else { students.unshift(result); }
+      applyFiltersAndRender(); return true;
+    } catch (error) { console.error('Error saving student:', error); showToast(error.message || 'Failed to save student', 'error'); return false;
+    } finally { hideLoading(); }
+  };
+  const deleteStudent = async (id) => { /* ... (deleteStudent implementation) ... */
+    showLoading("Deleting student...");
+    try { const { error } = await supabaseMain.from('studentsdemo').delete().eq('id', id); if (error) throw error;
+      showToast('Student deleted successfully!', 'success'); return true; // Realtime handles UI
+    } catch (error) { console.error('Error deleting student:', error); showToast('Failed to delete student', 'error'); return false;
+    } finally { hideLoading(); }
+  };
+  const exportToCSV = () => { /* ... (exportToCSV implementation) ... */
+    if(students.length === 0) { showToast('No data to export.', 'warning'); return; }
+    showLoading("Exporting CSV..."); try {
+    const headers = ['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Date Added', 'Status', 'Additional Info', 'DB ID'];
+    const rows = filteredStudents.map((s, i) => [i+1, `"${(s.name||'').replace(/"/g,'""')}"`, s.phone||'', s.class||'', s.group||'None', s.date?formatDate(s.date):'', s.status||'', `"${(s.info||'').replace(/"/g,'""')}"`, s.id||'']);
+    const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+    const blob = new Blob([String.fromCharCode(0xFEFF), csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=`adm_export_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast('CSV exported!','success'); } catch(e){console.error(e);showToast('CSV export failed','error');} finally{hideLoading();}
+  };
+  const exportToPDF = () => { /* ... (exportToPDF implementation using statusConfig.pdfColor) ... */
+    if(students.length === 0) { showToast('No data to export.', 'warning'); return; }
+    showLoading("Generating PDF..."); try {
+    const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+    doc.setFontSize(18); doc.setTextColor(40); doc.text('Admission Report',doc.internal.pageSize.getWidth()/2,20,{align:'center'});
+    doc.setFontSize(10); doc.text(`Generated: ${new Date().toLocaleDateString()}`,doc.internal.pageSize.getWidth()/2,27,{align:'center'});
+    doc.text(`Students (Filtered): ${filteredStudents.length}`,doc.internal.pageSize.getWidth()/2,32,{align:'center'});
+    let posY=40;
+    // Stats for PDF
+    const statCounts={}; Object.keys(statusConfig).forEach(k=>statCounts[k]=0);
+    filteredStudents.forEach(s=>{if(statCounts.hasOwnProperty(s.status))statCounts[s.status]++;});
+    doc.setFontSize(9); let statX=15; const sbh=7; const sbp=2;
+    Object.entries(statCounts).forEach(([st,ct])=>{ if(ct>0){
+        const cfg=statusConfig[st]; const txt=`${st}: ${ct}`; const tw=doc.getTextWidth(txt)+(sbp*2);
+        if(statX+tw > doc.internal.pageSize.getWidth()-15){statX=15;posY+=sbh+3;}
+        const rgb=hexToRgb(cfg.pdfColor||'#ccc'); doc.setFillColor(...rgb); doc.setTextColor(255);
+        doc.roundedRect(statX,posY,tw,sbh,1,1,'F'); doc.text(txt,statX+sbp,posY+(sbh/2)+(doc.getLineHeight()*0.25),{baseline:'middle'});
+        statX+=tw+3; }});
+    posY+=sbh+8;
+    const headers=[['#','Name','Phone','Class','Group','Status','Date']];
+    const data=filteredStudents.map((s,i)=>[i+1,s.name.length>25?s.name.substring(0,22)+'...':s.name,s.phone,s.class,s.group||'N/A',s.status,s.date?formatDate(s.date):'N/A']);
+    doc.autoTable({head:headers,body:data,startY:posY,theme:'grid',
+        headStyles:{fillColor:[41,128,185],textColor:255,fontStyle:'bold',halign:'center'},
+        styles:{fontSize:8,cellPadding:1.5,overflow:'linebreak',valign:'middle'},
+        columnStyles:{0:{cellWidth:10,halign:'center'},1:{cellWidth:45},2:{cellWidth:28},3:{cellWidth:15,halign:'center'},4:{cellWidth:20,halign:'center'},5:{cellWidth:30},6:{cellWidth:22,halign:'center'}},
+        didParseCell:(hd)=>{if(hd.section==='body'&&hd.column.index===5){const st=hd.cell.raw;const cfg=statusConfig[st];if(cfg&&cfg.pdfColor){const rgb=hexToRgb(cfg.pdfColor);hd.cell.styles.textColor=rgb;hd.cell.styles.fontStyle='bold';}}},
+        margin:{top:posY}});
+    const pgCt=doc.internal.getNumberOfPages(); for(let i=1;i<=pgCt;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(100);doc.text(`Page ${i} of ${pgCt}`,doc.internal.pageSize.getWidth()/2,doc.internal.pageSize.getHeight()-10,{align:'center'});}
+    doc.save(`adm_report_${new Date().toISOString().slice(0,10)}.pdf`);
+    showToast('PDF exported!','success');}catch(e){console.error(e);showToast('PDF export failed','error');}finally{hideLoading();}
+  };
+  const backupToJSON = () => { /* ... (backupToJSON implementation) ... */
+    if(students.length === 0) { showToast('No data to backup.', 'warning'); return; }
+    showLoading("Creating JSON backup..."); try{
+    const str=JSON.stringify(students,null,2); const blob=new Blob([str],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=`adm_backup_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    showToast('JSON backup!','success');}catch(e){console.error(e);showToast('Backup failed','error');}finally{hideLoading();}
+  };
+  const restoreFromJSON = (file) => { /* ... (restoreFromJSON implementation) ... */
+    showLoading("Reading JSON..."); const reader=new FileReader();
+    reader.onload=async(e)=>{ try{
+        const json=e.target.result; const data=JSON.parse(json);
+        if(!Array.isArray(data)) throw new Error('Invalid JSON: Expected array.');
+        const valid=data.filter(s=>s.name&&s.phone&&s.class&&s.date&&s.status&&typeof s.id!=='undefined');
+        if(valid.length===0) throw new Error('No valid records in JSON.');
+        showConfirmation('Restore from JSON',`Import ${valid.length} records? (Existing IDs might be updated).`,'restoreData',valid,'bg-blue-600 hover:bg-blue-700');
+    }catch(err){console.error(err);showToast(err.message||'Failed to parse JSON','error');}finally{hideLoading();restoreJSONInput.value='';}};
+    reader.onerror=()=>{hideLoading();showToast('Error reading JSON','error');restoreJSONInput.value='';};
+    reader.readAsText(file);
+  };
+  const performRestore = async (dataToRestore) => { /* ... (performRestore implementation using upsert) ... */
+    showLoading(`Restoring ${dataToRestore.length} students...`); try{
+    const {data,error}=await supabaseMain.from('studentsdemo').upsert(dataToRestore,{onConflict:'id',ignoreDuplicates:false}).select();
+    if(error)throw error; showToast(`Processed ${data.length} students. Refreshing...`,'success'); await fetchStudents();
+    }catch(e){console.error(e);showToast(`Restore failed: ${e.message}`,'error');}finally{hideLoading();}
+  };
+  const importFromCSV = (file) => { /* ... (importFromCSV implementation with robust header checking & date parsing) ... */
+    showLoading("Reading CSV..."); const reader=new FileReader();
+    reader.onload=async(e)=>{ try{
+        const csv=e.target.result; const lines=csv.split(/\r\n|\n/);
+        if(lines.length<2)throw new Error('CSV empty or no data rows.');
+        const rawH=lines[0].split(',').map(h=>h.trim().replace(/"/g,'').toLowerCase());
+        const reqH=['name','phone','class']; const missH=reqH.filter(rh=>!rawH.includes(rh));
+        if(missH.length>0)throw new Error(`CSV must have headers: ${missH.join(', ')}`);
+        const colMap={}; rawH.forEach((h,i)=>colMap[h]=i);
+        const newS=[]; const errs=[];
+        for(let i=1;i<lines.length;i++){ if(!lines[i].trim())continue; try{
+            const vals=parseCSVLine(lines[i]);
+            const name=vals[colMap['name']]; const phone=vals[colMap['phone']]; const sClass=vals[colMap['class']];
+            if(!name||!phone||!sClass){errs.push(`Skip row ${i+1}: Missing required.`); continue;}
+            let dateV=new Date().toISOString().split('T')[0];
+            if(colMap.hasOwnProperty('date')&&vals[colMap['date']]){ const pDate=new Date(vals[colMap['date']]); if(!isNaN(pDate))dateV=pDate.toISOString().split('T')[0]; else errs.push(`Warn row ${i+1}: Invalid date. Using today.`);}
+            newS.push({name:name,phone:phone,class:sClass,group:(colMap.hasOwnProperty('group')&&vals[colMap['group']])?vals[colMap['group']]:'None',date:dateV,status:(colMap.hasOwnProperty('status')&&vals[colMap['status']])?vals[colMap['status']]:'Not Checked',info:(colMap.hasOwnProperty('info')&&vals[colMap['info']])?vals[colMap['info']]:''});
+        }catch(lErr){errs.push(`Err row ${i+1}: ${lErr.message}`);}}
+        if(newS.length===0&&errs.length>0)throw new Error(`No valid records. Errors: ${errs.join('; ')}`);
+        if(newS.length===0)throw new Error('No valid records in CSV.');
+        if(errs.length>0){showToast(`${errs.length} CSV rows had issues. Check console.`,'warning',5000);console.warn('CSV import warnings:',errs);}
+        showConfirmation('Import from CSV',`Import ${newS.length} records?`,'importCSV',newS,'bg-blue-600 hover:bg-blue-700');
+    }catch(err){console.error(err);showToast(err.message||'Failed to import CSV','error',5000);}finally{hideLoading();importCSVInput.value='';}};
+    reader.onerror=()=>{hideLoading();showToast('Error reading CSV','error');importCSVInput.value='';};
+    reader.readAsText(file);
+  };
+  const performCSVImport = async (dataToImport) => { /* ... (performCSVImport implementation) ... */
+    showLoading(`Importing ${dataToImport.length} students...`); try{
+    const {data,error}=await supabaseMain.from('studentsdemo').insert(dataToImport.map(s=>({...s,created_at:new Date().toISOString()}))).select();
+    if(error)throw error; showToast(`Imported ${data.length} students. Refreshing...`,'success'); await fetchStudents();
+    }catch(e){console.error(e);showToast(`Import failed: ${e.message}`,'error');}finally{hideLoading();}
+  };
 
-      const debounce = (func, wait) => {
-        let timeout;
-        return function (...args) {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-      };
+  const applyFiltersAndRender = () => {
+    const term = searchInput.value.toLowerCase().trim();
+    const stat = statusFilter.value; const cls = classFilter.value; const grp = groupFilter.value;
+    filteredStudents = students.filter(s => 
+        (!term || (s.name||'').toLowerCase().includes(term) || (s.phone||'').includes(term) || (s.info||'').toLowerCase().includes(term) || (s.id||'').toString().toLowerCase().includes(term)) &&
+        (!stat || s.status === stat) && (!cls || s.class === cls) && (!grp || s.group === grp)
+    );
+    currentPage = 1; renderStudents(); updateDashboard(); updateCharts();
+  };
 
-      const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
-      };
+const renderStudents = () => {
+    const startIndex = (currentPage - 1) * studentsPerPage;
+    const endIndex = startIndex + studentsPerPage;
+    const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
+    studentList.innerHTML = '';
 
-      const validatePhone = (phone) => {
-        const regex = /^[0-9]{10,15}$/;
-        return regex.test(phone);
-      };
-
-      const showConfirmation = (title, message, action, data = null) => {
-        pendingAction = action;
-        pendingActionData = data;
-        confirmModalTitle.textContent = title;
-        confirmModalMessage.textContent = message;
-        confirmModal.classList.remove('hidden');
-      };
-
-      // Data Functions
-      const fetchStudents = async () => {
-        showLoading();
-        try {
-          const { data, error } = await supabaseMain.from('studentsdemo').select('*').order('date', { ascending: false });
-          if (error) throw error;
-          students = data || [];
-          filteredStudents = [...students];
-          renderStudents();
-          updateDashboard();
-          updateCharts();
-        } catch (error) {
-          console.error('Error fetching students:', error);
-          showToast('Failed to load students.', 'error');
-        } finally {
-          hideLoading();
+    if (filteredStudents.length === 0) {
+        let emptyMessage = '';
+        if (students.length === 0 && initialLoadingMessage.classList.contains('hidden')) {
+            emptyMessage = `<div class="col-span-full text-center py-10"><i class="fas fa-users-slash text-4xl text-gray-400 dark:text-gray-500 mb-4"></i><p class="text-gray-500 dark:text-gray-400">No students yet.</p><button id="addFirstStudentButton" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 custom-focus"><i class="fas fa-plus mr-2"></i>Add First Student</button></div>`;
+        } else if (students.length > 0) {
+            emptyMessage = `<div class="col-span-full text-center py-10"><i class="fas fa-search-minus text-4xl text-gray-400 dark:text-gray-500 mb-4"></i><p class="text-gray-500 dark:text-gray-400">No students match filters.</p><button id="clearFiltersButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 custom-focus">Clear Filters</button></div>`;
         }
-      };
+        studentList.innerHTML = emptyMessage;
+        document.getElementById('clearFiltersButton')?.addEventListener('click', () => { searchInput.value = ''; statusFilter.value = ''; classFilter.value = ''; groupFilter.value = ''; applyFiltersAndRender(); });
+        document.getElementById('addFirstStudentButton')?.addEventListener('click', openStudentForm);
+        updatePaginationControls(); // Still update pagination even if list is empty
+        return;
+    }
 
-      const saveStudent = async (studentData, id = null) => {
-        showLoading();
-        try {
-          if (!studentData.name || !studentData.phone || !studentData.class || !studentData.date) {
-            throw new Error('Please fill all required fields');
-          }
-          if (!validatePhone(studentData.phone)) {
-            throw new Error('Phone must be 10–15 digits');
-          }
-          let result;
-          if (id) {
-            const { data, error } = await supabaseMain.from('studentsdemo').update(studentData).eq('id', id).select();
-            if (error) throw error;
-            result = data[0];
-            showToast('Student updated!', 'success');
-          } else {
-            const { data, error } = await supabaseMain.from('studentsdemo').insert([studentData]).select();
-            if (error) throw error;
-            result = data[0];
-            showToast('Student added!', 'success');
-          }
-          if (id) {
-            const index = students.findIndex(s => s.id === id);
-            if (index !== -1) students[index] = result;
-          } else {
-            students.unshift(result);
-          }
-          filteredStudents = [...students];
-          renderStudents();
-          updateDashboard();
-          updateCharts();
-          return true;
-        } catch (error) {
-          console.error('Error saving student:', error);
-          showToast(error.message || 'Failed to save student', 'error');
-          return false;
-        } finally {
-          hideLoading();
-        }
-      };
+    paginatedStudents.forEach(student => {
+        const sCfg = statusConfig[student.status] || statusConfig["Not Checked"];
+        // Ensure student.id is a string for substring, use a default if null/undefined
+        const studentDbId = String(student.id || '0000'); 
+        const decimalIdPart = studentDbId.replace(/\D/g, '').slice(-4) || '0000'; // Take last 4 digits, or '0000'
+        const geniusId = `genius-${decimalIdPart.padStart(4, '0')}`;
+        
+        const currentGroup = student.group && student.group !== "None" ? student.group : "General"; // Default to General if None or undefined
+        const gCfg = groupConfig[currentGroup] || groupConfig["General"];
 
-      const deleteStudent = async (id) => {
-        showLoading();
-        try {
-          const { error } = await supabaseMain.from('studentsdemo').delete().eq('id', id);
-          if (error) throw error;
-          students = students.filter(student => student.id !== id);
-          filteredStudents = filteredStudents.filter(student => student.id !== id);
-          renderStudents();
-          updateDashboard();
-          updateCharts();
-          showToast('Student deleted!', 'success');
-          return true;
-        } catch (error) {
-          console.error('Error deleting student:', error);
-          showToast('Failed to delete student', 'error');
-          return false;
-        } finally {
-          hideLoading();
-        }
-      };
 
-      const exportToCSV = () => {
-        showLoading();
-        try {
-          let csvContent = "data:text/csv;charset=utf-8,";
-          csvContent += "Sl No,Name,Phone,Class,Group,Date,Status,Info\n";
-          students.forEach((student, index) => {
-            csvContent += `${index + 1},"${student.name}",${student.phone},${student.class},${student.group},${student.date},${student.status},"${student.info.replace(/"/g, '""')}"`
-              + "\n";
-          });
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          showToast('CSV exported successfully!', 'success');
-        } catch (error) {
-          console.error('Error exporting CSV:', error);
-          showToast('Failed to export CSV', 'error');
-        } finally {
-          hideLoading();
-        }
-      };
+        const card = document.createElement('div');
+        card.className = `relative group bg-gradient-to-br ${sCfg.gradient} rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-yellow-500 flex flex-col justify-between min-h-[300px] overflow-hidden`; // Added overflow-hidden for angled ID
 
-      const exportToPDF = () => {
-        showLoading();
-        try {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        // Angled ID "Stamp"
+        const idStamp = document.createElement('div');
+        idStamp.className = `angled-id ${sCfg.text} border-opacity-50`; // Use status text color for ID
+        idStamp.textContent = geniusId;
+        idStamp.title = `Student ID: ${geniusId}`;
+        card.appendChild(idStamp);
 
-          // Title
-          doc.setFontSize(18);
-          doc.setTextColor(40);
-          doc.text('Admission Tracker Pro - Student Report', 105, 20, { align: 'center' });
+        // Main Card Content Wrapper (to allow ID to be absolute)
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = "flex flex-col h-full pt-4"; // pt-4 to give space for angled ID
 
-          // Date
-          doc.setFontSize(10);
-          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 27, { align: 'center' });
+        contentWrapper.innerHTML = `
+            <div class="flex-grow"> <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full ${sCfg.badgeBg} bg-opacity-80 text-white flex items-center justify-center text-lg font-bold mr-3 flex-shrink-0 shadow" title="${student.name || 'N/A'}">
+                            ${(student.name || 'N A').split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold ${sCfg.text} truncate pr-16" title="${student.name || 'N/A'}">${student.name || 'N/A'}</h3>
+                            <div class="flex items-center mt-0.5">
+                                <span class="text-sm ${sCfg.iconColor} opacity-90">Class ${student.class || 'N/A'}</span>
+                                ${ (student.group && student.group !== "None") ? 
+                                    `<span class="ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full ${gCfg.badgeBg} ${gCfg.text}">${gCfg.icon} ${student.group}</span>`
+                                    : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute top-4 right-4 px-2.5 py-1 text-xs font-semibold text-white ${sCfg.badgeBg} rounded-full shadow-md flex items-center gap-1.5" title="Status: ${student.status}">
+                        ${sCfg.icon}
+                        <span>${student.status}</span>
+                    </div>
+                </div>
 
-          // Credit
-          doc.setFontSize(9);
-          doc.setTextColor(100);
-          doc.text('This software made by Mustafa Rahman, phone: 01840643946', 105, 33, { align: 'center' });
+                <div class="space-y-1.5 text-sm ${sCfg.text} opacity-80 mb-3">
+                    <div class="flex items-center" title="Phone: ${student.phone || 'N/A'}">
+                        <i class="fas fa-phone-alt w-4 mr-2 ${sCfg.iconColor} flex-shrink-0"></i>
+                        <a href="tel:${student.phone}" class="hover:underline truncate">${student.phone || 'N/A'}</a>
+                    </div>
+                    <div class="flex items-center" title="Date Added: ${formatDate(student.date)}">
+                        <i class="fas fa-calendar-alt w-4 mr-2 ${sCfg.iconColor} flex-shrink-0"></i>
+                        <span>${formatDate(student.date)}</span>
+                    </div>
+                </div>
 
-          // Statistics in one line
-          doc.setFontSize(12);
-          doc.setTextColor(0);
-          doc.text('Admission Statistics:', 14, 40);
-
-          // Stats
-          const stats = {
-            Total: filteredStudents.length,
-            Called: filteredStudents.filter(s => s.status === 'Called').length,
-            FollowUp: filteredStudents.filter(s => s.status === 'Follow-Up Needed').length,
-            Agreed: filteredStudents.filter(s => s.status === 'Agreed').length,
-            NotInterested: filteredStudents.filter(s => s.status === 'Not Interested').length,
-            Paid: filteredStudents.filter(s => s.status === 'Paid').length
-          };
-
-          let yPos = 47;
-          const statText = Object.entries(stats).map(([key, val]) => `${key}: ${val}`).join(" | ");
-          doc.setFontSize(10);
-          doc.setTextColor(0);
-          doc.text(statText, 14, yPos);
-
-          // Table Headers
-          const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
-          const data = students.map((student, index) => [
-            index + 1,
-            student.name,
-            student.phone,
-            student.class,
-            student.group,
-            student.status,
-            formatDate(student.date)
-          ]);
-
-          // Table
-          yPos += 10;
-          doc.autoTable({
-            head: headers,
-            body: data,
-            startY: yPos,
-            theme: 'grid',
-            headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-            styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
-            columnStyles: {
-              0: { cellWidth: 10 },
-              1: { cellWidth: 40 },
-              2: { cellWidth: 30 },
-              3: { cellWidth: 15 },
-              4: { cellWidth: 20 },
-              5: { cellWidth: 25 },
-              6: { cellWidth: 25 }
-            },
-            willDrawCell: (data) => {
-              if (data.column.index === 5 && data.section === 'body') {
-                const status = data.cell.raw;
-                const config = statusConfig[status] || statusConfig["Not Checked"];
-                data.cell.styles.textColor = config.pdfColor ? config.pdfColor : '#000000';
-              }
-            }
-          });
-
-          // Footer
-          const pageCount = doc.internal.getNumberOfPages();
-          for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`Page ${i} of ${pageCount}`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
-          }
-
-          doc.save(`students_report_${new Date().toISOString().slice(0, 10)}.pdf`);
-          showToast('PDF exported successfully!', 'success');
-        } catch (error) {
-          console.error('Error exporting PDF:', error);
-          showToast('Failed to export PDF', 'error');
-        } finally {
-          hideLoading();
-        }
-      };
-
-      const backupToJSON = () => {
-        showLoading();
-        try {
-          const dataStr = JSON.stringify(students, null, 2);
-          const blob = new Blob([dataStr], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `students_backup_${new Date().toISOString().slice(0, 10)}.json`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          showToast('JSON backup created!', 'success');
-        } catch (error) {
-          console.error('Error creating backup:', error);
-          showToast('Failed to create backup', 'error');
-        } finally {
-          hideLoading();
-        }
-      };
-
-      const restoreFromJSON = (file) => {
-        showLoading();
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            const jsonData = event.target.result;
-            const parsedData = JSON.parse(jsonData);
-            if (!Array.isArray(parsedData)) {
-              throw new Error('Invalid JSON format. Expected an array of student data.');
-            }
-            const validStudents = parsedData.filter(student => {
-              return student.name && student.phone && student.class && student.date && student.status;
-            });
-            if (validStudents.length === 0) {
-              throw new Error('No valid student records found in JSON file');
-            }
-            showConfirmation(
-              'Restore Data',
-              `This will import ${validStudents.length} student records. Existing data will be preserved. Continue?`,
-              'restoreData',
-              validStudents
-            );
-          } catch (error) {
-            console.error('Error restoring from JSON:', error);
-            showToast(error.message || 'Failed to restore from JSON', 'error');
-          } finally {
-            hideLoading();
-            restoreJSON.value = '';
-          }
-        };
-        reader.onerror = () => {
-          hideLoading();
-          showToast('Error reading JSON file', 'error');
-          restoreJSON.value = '';
-        };
-        reader.readAsText(file);
-      };
-
-      const performRestore = async (studentsToRestore) => {
-        showLoading();
-        try {
-          const { data, error } = await supabaseMain.from('studentsdemo').insert(studentsToRestore).select();
-          if (error) throw error;
-          students.unshift(...data);
-          filteredStudents = [...students];
-          renderStudents();
-          updateDashboard();
-          updateCharts();
-          showToast(`Successfully restored ${data.length} students`, 'success');
-        } catch (error) {
-          console.error('Error restoring data:', error);
-          showToast('Failed to restore data', 'error');
-        } finally {
-          hideLoading();
-        }
-      };
-
-      const importFromCSV = (file) => {
-        showLoading();
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            const csvData = event.target.result;
-            const lines = csvData.split('\n');
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            const newStudents = [];
-            for (let i = 1; i < lines.length; i++) {
-              if (!lines[i].trim()) continue;
-              const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-              if (values.length < headers.length) continue;
-              const student = {};
-              headers.forEach((header, index) => {
-                let value = values[index] ? values[index].trim().replace(/^"|"$/g, '') : '';
-                if (header === 'Date' && !value) value = new Date().toISOString().split('T')[0];
-                student[header.toLowerCase()] = value;
-              });
-              if (student.name && student.phone && student.class) {
-                newStudents.push({
-                  name: student.name,
-                  phone: student.phone,
-                  class: student.class,
-                  group: student.group || 'None',
-                  date: student.date || new Date().toISOString().split('T')[0],
-                  status: student.status || 'Not Checked',
-                  info: student.info || ''
-                });
-              }
-            }
-            if (newStudents.length === 0) {
-              throw new Error('No valid student records found in CSV');
-            }
-            showConfirmation(
-              'Import CSV',
-              `This will import ${newStudents.length} student records. Continue?`,
-              'importCSV',
-              newStudents
-            );
-          } catch (error) {
-            console.error('Error importing CSV:', error);
-            showToast(error.message || 'Failed to import CSV', 'error');
-          } finally {
-            hideLoading();
-            importCSV.value = '';
-          }
-        };
-        reader.onerror = () => {
-          hideLoading();
-          showToast('Error reading CSV file', 'error');
-          importCSV.value = '';
-        };
-        reader.readAsText(file);
-      };
-
-      const performCSVImport = async (studentsToImport) => {
-        showLoading();
-        try {
-          const { data, error } = await supabaseMain.from('studentsdemo').insert(studentsToImport).select();
-          if (error) throw error;
-          students.unshift(...data);
-          filteredStudents = [...students];
-          renderStudents();
-          updateDashboard();
-          updateCharts();
-          showToast(`Successfully imported ${data.length} students`, 'success');
-        } catch (error) {
-          console.error('Error importing students:', error);
-          showToast('Failed to import students', 'error');
-        } finally {
-          hideLoading();
-        }
-      };
-
-      // UI Functions
-      const filterStudents = () => {
-        const searchTerm = (searchInputMobile.value || searchInputDesktop.value).toLowerCase();
-        const statusValue = statusFilter.value;
-        const classValue = classFilter.value;
-        const groupValue = groupFilter.value;
-        filteredStudents = students.filter(student => {
-          const matchesSearch =
-            student.name.toLowerCase().includes(searchTerm) ||
-            student.phone.includes(searchTerm) ||
-            (student.info && student.info.toLowerCase().includes(searchTerm));
-          const matchesStatus = statusValue ? student.status === statusValue : true;
-          const matchesClass = classValue ? student.class === classValue : true;
-          const matchesGroup = groupValue ? student.group === groupValue : true;
-          return matchesSearch && matchesStatus && matchesClass && matchesGroup;
-        });
-        currentPage = 1;
-        renderStudents();
-        updateDashboard();
-        updateCharts();
-      };
-
-      const renderStudents = () => {
-        const startIndex = (currentPage - 1) * studentsPerPage;
-        const endIndex = startIndex + studentsPerPage;
-        const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
-        studentList.innerHTML = '';
-        if (filteredStudents.length === 0) {
-          studentList.innerHTML = `
-            <div class="col-span-full text-center py-10">
-              <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
-              <p class="text-gray-500 dark:text-gray-400">No students found matching your criteria.</p>
+                <p class="text-xs ${sCfg.text} opacity-70 mb-3 h-10 overflow-hidden leading-snug custom-scrollbar" title="${student.info || ''}">
+                    ${student.info ? (student.info.substring(0, 70) + (student.info.length > 70 ? '...' : '')) : '<span class="italic opacity-80">No additional info.</span>'}
+                </p>
             </div>
-          `;
-          return;
-        }
-        paginatedStudents.forEach(student => {
-          const config = statusConfig[student.status] || statusConfig["Not Checked"];
-          const card = document.createElement('div');
-          card.className = `rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 card-hover`;
-          card.innerHTML = `
-            <div class="p-4 text-sm">
-              <div class="flex justify-between items-center mb-2">
-                <h3 class="text-base font-semibold truncate">${student.name}</h3>
-                <div class="flex items-center gap-1 text-gray-500 dark:text-gray-400">
-                  ${config.icon}
-                  <span class="text-xs">${student.status}</span>
+
+            <div class="mt-auto border-t border-gray-300 dark:border-gray-600/50 pt-3">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="window.editStudent('${student.id}')" class="flex-1 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 dark:bg-sky-600 dark:hover:bg-sky-700 text-white rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-transform transform hover:scale-105 custom-focus" title="Edit ${student.name || ''}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button onclick="window.deleteStudentPrompt('${student.id}')" class="flex-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-transform transform hover:scale-105 custom-focus" title="Delete ${student.name || ''}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <a href="tel:${student.phone}" class="flex-1 px-3 py-1.5 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-transform transform hover:scale-105 custom-focus" title="Call ${student.name || ''}">
+                        <i class="fas fa-phone"></i> Call
+                    </a>
                 </div>
-              </div>
-              <div class="space-y-1 mb-3">
-                <div class="flex items-center gap-2">
-                  <i class="fas fa-phone-alt text-gray-500 dark:text-gray-400 text-xs"></i>
-                  <a href="tel:${student.phone}" class="hover:underline">${student.phone}</a>
-                </div>
-                <div class="flex items-center gap-2">
-                  <i class="fas fa-graduation-cap text-gray-500 dark:text-gray-400 text-xs"></i>
-                  <span>Class ${student.class}${student.group !== 'None' ? ` (${student.group})` : ''}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <i class="fas fa-calendar-day text-gray-500 dark:text-gray-400 text-xs"></i>
-                  <span>${formatDate(student.date)}</span>
-                </div>
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <button onclick="editStudent('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-                  <i class="fas fa-edit text-xs"></i> Edit
-                </button>
-                <button onclick="deleteStudentPrompt('${student.id}')" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-                  <i class="fas fa-trash text-xs"></i> Delete
-                </button>
-                <a href="tel:${student.phone}" class="px-2 py-1 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md text-xs flex items-center gap-1 border border-gray-200 dark:border-gray-600">
-                  <i class="fas fa-phone text-xs"></i> Call
-                </a>
-              </div>
             </div>
-          `;
-          studentList.appendChild(card);
-        });
-
-        const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-        showingCount.textContent = paginatedStudents.length;
-        totalCount.textContent = filteredStudents.length;
-        prevPage.disabled = currentPage === 1;
-        nextPage.disabled = currentPage === totalPages || totalPages === 0;
-      };
-
-      const updateDashboard = () => {
-        dashboardElements.total.textContent = filteredStudents.length;
-        dashboardElements.called.textContent = filteredStudents.filter(s => s.status === 'Called').length;
-        dashboardElements.followup.textContent = filteredStudents.filter(s => s.status === 'Follow-Up Needed').length;
-        dashboardElements.agreed.textContent = filteredStudents.filter(s => s.status === 'Agreed').length;
-        dashboardElements.none.textContent = filteredStudents.filter(s => s.status === 'Not Interested').length;
-        dashboardElements.paid.textContent = filteredStudents.filter(s => s.status === 'Paid').length;
-      };
-
-      const initCharts = () => {
-        const classCtx = document.getElementById('classChart').getContext('2d');
-        classChart = new Chart(classCtx, {
-          type: 'bar',
-          data: {
-            labels: ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'],
-            datasets: [{
-              label: 'Students by Class',
-              backgroundColor: '#3b82f6',
-              borderColor: '#2563eb',
-              borderWidth: 1,
-              data: [0, 0, 0, 0, 0, 0, 0]
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { precision: 0 }
-              }
-            },
-            plugins: {
-              legend: { display: false }
-            }
-          }
-        });
-
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        statusChart = new Chart(statusCtx, {
-          type: 'doughnut',
-          data: {
-            labels: ['Not Checked', 'Called', 'Follow-Up Needed', 'Agreed', 'Paid', 'Not Interested'],
-            datasets: [{
-              data: [0, 0, 0, 0, 0, 0],
-              backgroundColor: ['#9ca3af', '#a855f7', '#eab308', '#3b82f6', '#10b981', '#ef4444'],
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { position: 'right' }
-            }
-          }
-        });
-
-        const progressCtx = document.getElementById('progressChart').getContext('2d');
-        progressChart = new Chart(progressCtx, {
-          type: 'line',
-          data: {
-            labels: [],
-            datasets: [{ label: 'Admissions Progress', data: [], fill: false, borderColor: '#3b82f6', tension: 0.1 }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } }
-          }
-        });
-      };
-
-      const updateCharts = () => {
-        if (!classChart || !statusChart || !progressChart) return;
-
-        const classCounts = [6, 7, 8, 9, 10, 11, 12].map(cls =>
-          filteredStudents.filter(s => s.class == cls).length
-        );
-        classChart.data.datasets[0].data = classCounts;
-        classChart.update();
-
-        const statusCounts = [
-          filteredStudents.filter(s => s.status === 'Not Checked').length,
-          filteredStudents.filter(s => s.status === 'Called').length,
-          filteredStudents.filter(s => s.status === 'Follow-Up Needed').length,
-          filteredStudents.filter(s => s.status === 'Agreed').length,
-          filteredStudents.filter(s => s.status === 'Paid').length,
-          filteredStudents.filter(s => s.status === 'Not Interested').length
-        ];
-        statusChart.data.datasets[0].data = statusCounts;
-        statusChart.update();
-
-        if (students.length > 0) {
-          const dateMap = {};
-          students.forEach(student => {
-            const date = student.date.split('T')[0];
-            dateMap[date] = (dateMap[date] || 0) + 1;
-          });
-          const sortedDates = Object.keys(dateMap).sort();
-          const cumulativeCounts = [];
-          let total = 0;
-          sortedDates.forEach(date => {
-            total += dateMap[date];
-            cumulativeCounts.push(total);
-          });
-          progressChart.data.labels = sortedDates.map(date => formatDate(date));
-          progressChart.data.datasets[0].data = cumulativeCounts;
-          progressChart.update();
-        }
-      };
-
-      // Event Listeners
-      openStudentPanel.addEventListener('click', () => {
-        currentEditingId = null;
-        modalTitle.textContent = 'Add Student';
-        studentForm.reset();
-        document.getElementById('date').valueAsDate = new Date();
-        studentPanelModal.classList.remove('hidden');
-      });
-
-      closeStudentPanel.addEventListener('click', () => {
-        studentPanelModal.classList.add('hidden');
-      });
-
-      studentForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const studentData = {
-          name: document.getElementById('name').value.trim(),
-          phone: document.getElementById('phone').value.trim(),
-          class: document.getElementById('class').value,
-          group: document.getElementById('group').value,
-          date: document.getElementById('date').value,
-          status: document.getElementById('status').value,
-          info: document.getElementById('info').value.trim()
-        };
-        await saveStudent(studentData, currentEditingId);
-        studentPanelModal.classList.add('hidden');
-      });
-
-      searchInputMobile.addEventListener('input', debounce(filterStudents, 300));
-      searchInputDesktop.addEventListener('input', debounce(filterStudents, 300));
-
-      statusFilter.addEventListener('change', filterStudents);
-      classFilter.addEventListener('change', filterStudents);
-      groupFilter.addEventListener('change', filterStudents);
-
-      prevPage.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          renderStudents();
-        }
-      });
-
-      nextPage.addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-        if (currentPage < totalPages) {
-          currentPage++;
-          renderStudents();
-        }
-      });
-
-      cancelConfirm.addEventListener('click', () => {
-        confirmModal.classList.add('hidden');
-        pendingAction = null;
-        pendingActionData = null;
-      });
-
-      proceedConfirm.addEventListener('click', async () => {
-        confirmModal.classList.add('hidden');
-        if (pendingAction === 'deleteStudent') {
-          await deleteStudent(pendingActionData);
-        } else if (pendingAction === 'importCSV') {
-          await performCSVImport(pendingActionData);
-        } else if (pendingAction === 'restoreData') {
-          await performRestore(pendingActionData);
-        }
-        pendingAction = null;
-        pendingActionData = null;
-      });
-
-      exportCSV.addEventListener('click', exportToCSV);
-      exportPDF.addEventListener('click', exportToPDF);
-      backupJSON.addEventListener('click', backupToJSON);
-      importCSV.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-          importFromCSV(e.target.files[0]);
-        }
-      });
-      restoreJSON.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-          restoreFromJSON(e.target.files[0]);
-        }
-      });
-
-      darkModeToggle.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('darkMode', isDark);
-        if (isDark) {
-          toggleThumb.classList.add('translate-x-8');
-          toggleIcon.textContent = '☀️';
-        } else {
-          toggleThumb.classList.add('translate-x-0');
-          toggleIcon.textContent = '🌙';
-        }
-        initCharts();
-        updateCharts();
-      });
-
-      filterToggle.addEventListener('click', () => {
-        filterControls.classList.toggle('active');
-        if (filterControls.classList.contains('active')) {
-          filterIcon.classList.remove('fa-filter');
-          filterIcon.classList.add('fa-times');
-          filterControls.style.maxHeight = filterControls.scrollHeight + 'px';
-        } else {
-          filterIcon.classList.remove('fa-times');
-          filterIcon.classList.add('fa-filter');
-          filterControls.style.maxHeight = '0';
-        }
-      });
-
-      window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) {
-          filterControls.classList.remove('hidden');
-          filterControls.classList.add('grid');
-          filterControls.classList.remove('active');
-          filterIcon.classList.remove('fa-times');
-          filterIcon.classList.add('fa-filter');
-          filterControls.style.maxHeight = '';
-        } else {
-          filterControls.classList.add('hidden');
-          filterControls.classList.remove('grid');
-          filterControls.classList.remove('active');
-          filterIcon.classList.remove('fa-times');
-          filterIcon.classList.add('fa-filter');
-          filterControls.style.maxHeight = '';
-        }
-      });
-
-      if (localStorage.getItem('darkMode') === 'true') {
-        document.documentElement.classList.add('dark');
-        toggleThumb.classList.add('translate-x-8');
-        toggleIcon.textContent = '☀️';
-      } else {
-        toggleThumb.classList.add('translate-x-0');
-        toggleIcon.textContent = '🌙';
-      }
-
-      initCharts();
-      fetchStudents();
-
-      const channel = supabaseMain.channel('students_changes').on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'studentsdemo'
-      }, () => {
-        fetchStudents();
-      }).subscribe();
-
-      window.editStudent = (id) => {
-        const student = students.find(s => s.id === id);
-        if (!student) return;
-        currentEditingId = id;
-        modalTitle.textContent = 'Edit Student';
-        document.getElementById('name').value = student.name;
-        document.getElementById('phone').value = student.phone;
-        document.getElementById('class').value = student.class;
-        document.getElementById('group').value = student.group;
-        document.getElementById('date').value = student.date;
-        document.getElementById('status').value = student.status;
-        document.getElementById('info').value = student.info || '';
-        studentPanelModal.classList.remove('hidden');
-      };
-
-      window.deleteStudentPrompt = (id) => {
-        const student = students.find(s => s.id === id);
-        if (!student) return;
-        showConfirmation(
-          'Delete Student',
-          `Are you sure you want to delete ${student.name}? This action cannot be undone.`,
-          'deleteStudent',
-          id
-        );
-      };
+        `;
+        card.appendChild(contentWrapper);
+        studentList.appendChild(card);
     });
-  </script>
+    updatePaginationControls();
+  };
+
+  const updatePaginationControls = () => { /* ... (updatePaginationControls - no change from previous) ... */
+    const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages || 1}`;
+    // Correctly display count for single page results or when no results
+    const currentDisplayCount = paginatedStudents.length > 0 ? paginatedStudents.length : (totalPages === 1 && filteredStudents.length > 0) ? filteredStudents.length : 0;
+    showingCount.textContent = currentDisplayCount;
+    totalCount.textContent = filteredStudents.length;
+    prevPage.disabled = currentPage === 1;
+    nextPage.disabled = currentPage === totalPages || totalPages === 0;
+    prevPage.classList.toggle('opacity-50',prevPage.disabled);prevPage.classList.toggle('cursor-not-allowed',prevPage.disabled);
+    nextPage.classList.toggle('opacity-50',nextPage.disabled);nextPage.classList.toggle('cursor-not-allowed',nextPage.disabled);
+  };
+  const updateDashboard = () => { /* ... (updateDashboard - no change) ... */
+    dashboardElements.total.textContent=students.length;
+    dashboardElements.called.textContent=students.filter(s=>s.status==='Called').length;
+    dashboardElements.followup.textContent=students.filter(s=>s.status==='Follow-Up Needed').length;
+    dashboardElements.agreed.textContent=students.filter(s=>s.status==='Agreed').length;
+    dashboardElements.none.textContent=students.filter(s=>s.status==='Not Interested').length;
+    dashboardElements.paid.textContent=students.filter(s=>s.status==='Paid').length;
+  };
+
+  const CHART_COLORS_DARK = { backgroundColor: 'rgba(55,65,81,0.3)', borderColor: 'rgba(156,163,175,0.8)', gridColor: 'rgba(75,85,99,0.3)', ticksColor: 'rgba(209,213,219,0.9)', labelColor: 'rgba(209,213,219,0.9)' };
+  const CHART_COLORS_LIGHT = { backgroundColor: 'rgba(229,231,235,0.3)', borderColor: 'rgba(107,114,128,0.8)', gridColor: 'rgba(209,213,219,0.3)', ticksColor: 'rgba(55,65,81,0.9)', labelColor: 'rgba(55,65,81,0.9)' };
+  const getChartColors = () => document.documentElement.classList.contains('dark') ? CHART_COLORS_DARK : CHART_COLORS_LIGHT;
+
+  const initCharts = () => { /* ... (initCharts - uses getChartColors) ... */
+    const cColors = getChartColors();
+    const defOpts = { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:cColors.labelColor}}}, scales:{y:{beginAtZero:true,ticks:{precision:0,color:cColors.ticksColor},grid:{color:cColors.gridColor}},x:{ticks:{color:cColors.ticksColor},grid:{color:cColors.gridColor}}}};
+    if(classChart)classChart.destroy(); const clCtx=document.getElementById('classChart').getContext('2d');
+    classChart=new Chart(clCtx,{type:'bar',data:{labels:['6','7','8','9','10','11','12'],datasets:[{label:'By Class',backgroundColor:Object.values(statusConfig).map(s=>s.pdfColor),borderColor:cColors.borderColor,borderWidth:1,data:[0,0,0,0,0,0,0]}]},options:{...defOpts,plugins:{legend:{display:false}}}});
+    if(statusChart)statusChart.destroy(); const stCtx=document.getElementById('statusChart').getContext('2d');
+    statusChart=new Chart(stCtx,{type:'doughnut',data:{labels:Object.keys(statusConfig),datasets:[{data:Object.keys(statusConfig).map(()=>0),backgroundColor:Object.values(statusConfig).map(s=>s.pdfColor),borderColor:document.documentElement.classList.contains('dark')?'#2d3748':'#fff',borderWidth:2}]},options:{...defOpts,plugins:{legend:{position:'right',labels:{color:cColors.labelColor}}}}});
+    if(progressChart)progressChart.destroy(); const prCtx=document.getElementById('progressChart').getContext('2d');
+    progressChart=new Chart(prCtx,{type:'line',data:{labels:[],datasets:[{label:'Admissions Added',data:[],fill:true,backgroundColor:cColors.backgroundColor,borderColor:statusConfig['Agreed'].pdfColor||'#3b82f6',tension:0.2}]},options:defOpts});
+  };
+  const updateCharts = () => { /* ... (updateCharts - uses getChartColors and statusConfig for colors) ... */
+    if(!classChart||!statusChart||!progressChart)return; const cColors=getChartColors();
+    const clsCounts=['6','7','8','9','10','11','12'].map(c=>filteredStudents.filter(s=>String(s.class)===c).length);
+    classChart.data.datasets[0].data=clsCounts; classChart.options.scales.y.ticks.color=cColors.ticksColor; classChart.options.scales.x.ticks.color=cColors.ticksColor; classChart.options.scales.y.grid.color=cColors.gridColor; classChart.options.scales.x.grid.color=cColors.gridColor; classChart.update();
+    const stChartData=Object.keys(statusConfig).map(k=>filteredStudents.filter(s=>s.status===k).length);
+    statusChart.data.datasets[0].data=stChartData; statusChart.options.plugins.legend.labels.color=cColors.labelColor; statusChart.update();
+    if(students.length>0){const dateMap={}; const sortedSByDate=[...students].sort((a,b)=>new Date(a.date)-new Date(b.date));
+        sortedSByDate.forEach(s=>{const d=s.date?s.date.split('T')[0]:null; if(d)dateMap[d]=(dateMap[d]||0)+1;});
+        const sortedD=Object.keys(dateMap).sort((a,b)=>new Date(a)-new Date(b)); const cumCounts=[]; let total=0;
+        sortedD.forEach(d=>{total+=dateMap[d];cumCounts.push(total);});
+        progressChart.data.labels=sortedD.map(d=>formatDate(d)); progressChart.data.datasets[0].data=cumCounts;
+        progressChart.options.scales.y.ticks.color=cColors.ticksColor;progressChart.options.scales.x.ticks.color=cColors.ticksColor;progressChart.options.scales.y.grid.color=cColors.gridColor;progressChart.options.scales.x.grid.color=cColors.gridColor;progressChart.options.plugins.legend.labels.color=cColors.labelColor;progressChart.data.datasets[0].borderColor=statusConfig['Agreed'].pdfColor||'#3b82f6';progressChart.data.datasets[0].backgroundColor=cColors.backgroundColor; progressChart.update();}
+  };
+  const openStudentForm = (studentToEdit = null) => { /* ... (openStudentForm implementation) ... */
+    currentEditingId=studentToEdit?studentToEdit.id:null; modalTitle.textContent=studentToEdit?'Edit Student':'Add Student';
+    saveButtonText.textContent=studentToEdit?'Update Student':'Save Student'; studentForm.reset();
+    if(studentToEdit){document.getElementById('name').value=studentToEdit.name||'';document.getElementById('phone').value=studentToEdit.phone||'';document.getElementById('class').value=studentToEdit.class||'';document.getElementById('group').value=studentToEdit.group||'None';document.getElementById('date').value=studentToEdit.date?studentToEdit.date.split('T')[0]:getCurrentDateInput();document.getElementById('status').value=studentToEdit.status||'Not Checked';document.getElementById('info').value=studentToEdit.info||'';}
+    else{document.getElementById('date').value=getCurrentDateInput();}
+    studentPanelModal.classList.remove('hidden'); document.getElementById('name').focus();
+  };
+
+  openStudentPanel.addEventListener('click', () => openStudentForm());
+  closeStudentPanel.addEventListener('click', () => studentPanelModal.classList.add('hidden'));
+  studentForm.addEventListener('submit', async (e) => { e.preventDefault(); const sData={name:document.getElementById('name').value.trim(),phone:document.getElementById('phone').value.trim(),class:document.getElementById('class').value,group:document.getElementById('group').value,date:document.getElementById('date').value,status:document.getElementById('status').value,info:document.getElementById('info').value.trim()}; const ok = await saveStudent(sData,currentEditingId); if(ok)studentPanelModal.classList.add('hidden'); });
+  searchInput.addEventListener('input', debounce(applyFiltersAndRender, 350));
+  statusFilter.addEventListener('change', applyFiltersAndRender); classFilter.addEventListener('change', applyFiltersAndRender); groupFilter.addEventListener('change', applyFiltersAndRender);
+  prevPage.addEventListener('click', ()=>{if(currentPage>1){currentPage--;renderStudents();}});
+  nextPage.addEventListener('click', ()=>{const totalP=Math.ceil(filteredStudents.length/studentsPerPage);if(currentPage<totalP){currentPage++;renderStudents();}});
+  cancelConfirm.addEventListener('click', ()=>{confirmModal.classList.add('hidden');pendingAction=null;pendingActionData=null;});
+  proceedConfirm.addEventListener('click', async ()=>{ confirmModal.classList.add('hidden'); if(pendingAction==='deleteStudent')await deleteStudent(pendingActionData); else if(pendingAction==='importCSV')await performCSVImport(pendingActionData); else if(pendingAction==='restoreData')await performRestore(pendingActionData); pendingAction=null;pendingActionData=null; });
+  exportCSVBtn.addEventListener('click', exportToCSV); exportPDFBtn.addEventListener('click', exportToPDF); backupJSONBtn.addEventListener('click', backupToJSON);
+  importCSVInput.addEventListener('change', (e)=>{if(e.target.files.length>0)importFromCSV(e.target.files[0]);});
+  restoreJSONInput.addEventListener('change', (e)=>{if(e.target.files.length>0)restoreFromJSON(e.target.files[0]);});
+
+  const applyDarkMode = (isDark) => {
+    document.documentElement.classList.toggle('dark', isDark);
+    toggleThumb.style.transform = isDark ? 'translateX(100%)' : 'translateX(0)'; // More reliable transform
+    toggleIcon.textContent = isDark ? '☀️' : '🌙';
+    initCharts(); updateCharts();
+  };
+  darkModeToggle.addEventListener('click', ()=>{const isDark = !document.documentElement.classList.contains('dark'); localStorage.setItem('darkMode',isDark); applyDarkMode(isDark);});
+  darkModeToggle.addEventListener('keydown', (e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const isDark=!document.documentElement.classList.contains('dark');localStorage.setItem('darkMode',isDark);applyDarkMode(isDark);}});
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; const savedDark = localStorage.getItem('darkMode');
+  applyDarkMode(savedDark==='true'||(savedDark===null&&prefersDark));
+
+  const channel = supabaseMain.channel('students_changes').on('postgres_changes',{event:'*',schema:'public',table:'studentsdemo'},(payload)=>{console.log('DB Change!',payload);showToast('Data updated real-time!','info',1500);fetchStudents();}).subscribe();
+
+  window.editStudent = (id) => { const s = students.find(st=>String(st.id)===String(id)); if(!s){showToast(`Student ID ${id} not found.`,'error');return;}; openStudentForm(s); };
+  window.deleteStudentPrompt = (id) => { const s = students.find(st=>String(st.id)===String(id)); if(!s){showToast(`Student ID ${id} not found.`,'error');return;}; showConfirmation('Delete Student',`Delete ${s.name}? CANNOT BE UNDONE.`,'deleteStudent',id);};
+  
+  const header=document.querySelector('header'); const setHeaderHeight=()=>{if(header){const hH=header.offsetHeight;document.documentElement.style.setProperty('--header-height',`${hH}px`);}};
+  setHeaderHeight(); window.addEventListener('resize', debounce(setHeaderHeight,200));
+
+  initCharts(); fetchStudents();
+});
+</script>
+
+  <footer class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-gray-700 dark:text-gray-300 mt-12 shadow-inner border-t border-gray-200 dark:border-gray-700/50">
+    <div class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+      <div class="flex flex-col items-center md:items-start gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" /></svg>
+        <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">Admission Tracker Pro</h2>
+        <p class="text-sm opacity-80">Streamlining admissions effectively.</p>
+      </div>
+      <div class="flex flex-col gap-2"><h3 class="text-lg font-semibold mb-1">Quick Links</h3><a href="#filterSection" class="hover:underline hover:text-blue-600 dark:hover:text-yellow-400 transition-colors">Dashboard</a><button onclick="document.getElementById('openStudentPanel').click()" class="text-left hover:underline hover:text-blue-600 dark:hover:text-yellow-400 transition-colors">Add Student</button></div>
+      <div class="flex flex-col items-center md:items-end gap-3"><h3 class="text-lg font-semibold">Connect</h3><div class="flex gap-4 text-xl"><a href="https://wa.me/+8801840643946" target="_blank" class="hover:text-green-500 transition-colors" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a><a href="mailto:mustafa.rahman@example.com" class="hover:text-red-500 transition-colors" aria-label="Email"><i class="fas fa-envelope"></i></a><a href="https://mustafaofficial.netlify.app" target="_blank" class="hover:text-blue-600 transition-colors" aria-label="Portfolio/Facebook"><i class="fab fa-facebook"></i></a></div></div>
+    </div>
+    <div class="text-center py-4 border-t border-gray-300 dark:border-gray-700/60 text-sm"><span id="year"></span> &copy; Admission Tracker Pro — Mustafa Rahman.</div>
+    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  </footer>
 </body>
 </html>

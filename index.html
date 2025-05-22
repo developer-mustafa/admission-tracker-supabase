@@ -125,9 +125,9 @@
     </div>
   </header>
 
-  <main class="container mx-auto px-4 py-6 space-y-6">
+  <main class="container mx-auto px-4 py-4 space-y-6">
     <!-- Dashboard Summary -->
-    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
       <div
         class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
         <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full mr-4">
@@ -178,6 +178,19 @@
           <p id="noneStudents" class="text-2xl font-bold">0</p>
         </div>
       </div>
+
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
+        <div class="p-3 bg-gray-200 dark:bg-gray-900 rounded-full mr-4">
+          <i class="fas fa-phone-slash text-gray-800 dark:text-gray-300 text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-gray-700 dark:text-gray-300 text-sm font-medium">Need Phone No.</h3>
+          <p id="needPhoneNumbers" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+        </div>
+      </div>
+
+
       <div
         class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700">
         <div class="p-3 bg-emerald-100 dark:bg-emerald-900 rounded-full mr-4">
@@ -207,6 +220,7 @@
           <option value="Agreed">Agreed</option>
           <option value="Paid">Paid</option>
           <option value="Not Interested">Not Interested</option>
+          <option value="Need Phone-Number">Need Phone-Number</option>
         </select>
 
         <select id="classFilter"
@@ -389,6 +403,7 @@
             <option value="Agreed">Agreed</option>
             <option value="Paid">Paid</option>
             <option value="Not Interested">Not Interested</option>
+            <option value="Need Phone-Number">Need Phone-Number</option>
           </select>
         </div>
 
@@ -479,12 +494,24 @@
           text: 'text-emerald-800 dark:text-emerald-100',
           iconColor: 'text-emerald-500 dark:text-emerald-300'
         },
+
         "Not Interested": {
           icon: '<i class="fas fa-ban mr-1"></i>',
           bg: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-800 dark:to-red-900',
           text: 'text-red-800 dark:text-red-100',
           iconColor: 'text-red-500 dark:text-red-300'
-        }
+        },
+      "Need Phone-Number": {
+  icon: '<i class="fas fa-phone-slash mr-1"></i>',
+  bg: 'bg-[#808080] dark:bg-white',
+  text: 'text-white dark:text-black',
+  iconColor: 'text-white dark:text-black'
+}
+
+
+
+
+
       };
 
       // Status Configuration for PDF
@@ -494,8 +521,11 @@
         "Agreed": { pdfColor: "#2ecc71" },
         "Not Interested": { pdfColor: "#e74c3c" },
         "Paid": { pdfColor: "#9b59b6" },
-        "Not Checked": { pdfColor: "#95a5a6" }
+        "Not Checked": { pdfColor: "#95a5a6" },
+        "Need Phone-Number": { pdfColor: "#4d4d4d" } // 70% dark (neutral tone)
+
       };
+
 
       // DOM Elements
       const loadingOverlay = document.getElementById('loadingOverlay');
@@ -536,7 +566,8 @@
         followup: document.getElementById('followupStudents'),
         agreed: document.getElementById('agreedStudents'),
         none: document.getElementById('noneStudents'),
-        paid: document.getElementById('paidStudents')
+        paid: document.getElementById('paidStudents'),
+        NeedPhoneNumber: document.getElementById('needPhoneNumbers')
       };
 
       // ================ UTILITY FUNCTIONS ================
@@ -609,7 +640,7 @@
         const pattern = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g;
         const values = [];
         let match;
-        
+
         while ((match = pattern.exec(line)) !== null) {
           let value = match[0];
           if (value.startsWith(',')) value = value.substring(1);
@@ -618,7 +649,7 @@
           }
           values.push(value);
         }
-        
+
         return values;
       };
 
@@ -740,7 +771,7 @@
         try {
           // Create CSV headers
           const headers = ['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Date', 'Status', 'Info'];
-          
+
           // Process data rows with proper CSV escaping
           const rows = students.map((student, index) => {
             return [
@@ -780,17 +811,121 @@
         }
       };
 
-      const exportToPDF = () => {
-        showLoading();
-        try {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-          });
+const exportToPDF = () => {
+  showLoading();
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-          // Title & Meta
+    // Title & Meta - First page header
+    doc.setFontSize(18);
+    doc.setTextColor(40);
+    doc.text('Admission Tracker Pro - Student Report', 105, 20, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()} Developed by Mustafa Rahman - Software Engineer, Contact:01840643946 `, 105, 27, { align: 'center' });
+    doc.text(`Total Students: ${filteredStudents.length}`, 105, 32, { align: 'center' });
+
+    // Statistics section
+    const stats = [
+      { label: "Called", value: filteredStudents.filter(s => s.status === 'Called').length },
+      { label: "Follow-Up", value: filteredStudents.filter(s => s.status === 'Follow-Up Needed').length },
+      { label: "Agreed", value: filteredStudents.filter(s => s.status === 'Agreed').length },
+      { label: "Paid", value: filteredStudents.filter(s => s.status === 'Paid').length },
+      { label: "Not Interested", value: filteredStudents.filter(s => s.status === 'Not Interested').length },
+      { label: "Not Checked", value: filteredStudents.filter(s => s.status === 'Not Checked').length },
+      { label: "Need Phone-Number", value: filteredStudents.filter(s => s.status === 'Need Phone-Number').length }
+    ];
+
+    let startX = 15;
+    let posX = startX;
+    let posY = 43;
+    doc.setFontSize(10);
+
+    stats.forEach(stat => {
+      let config;
+      // Special case for Follow-Up to use the specified color
+      if (stat.label === "Follow-Up") {
+        config = { pdfColor: '#f59e0b' };
+      } else {
+        config = statusConfigs[stat.label] || statusConfigs["Not Checked"];
+      }
+      
+      const text = `${stat.label}: ${stat.value}`;
+      const textWidth = doc.getTextWidth(text) + 6;
+
+      if (posX + textWidth > 190) {
+        posX = startX;
+        posY += 10;
+      }
+
+      const rgb = hexToRgb(config.pdfColor || '#cccccc');
+      doc.setFillColor(...rgb);
+      doc.setTextColor(255);
+      doc.roundedRect(posX, posY, textWidth, 8, 2, 2, 'F');
+      doc.text(text, posX + 3, posY + 5.5);
+
+      posX += textWidth + 4;
+    });
+
+    // Table data - using filteredStudents instead of all students
+    const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Query Date']];
+    const data = filteredStudents.map((student, index) => [
+      index + 1,
+      student.name.length > 20 ? student.name.substring(0, 17) + '...' : student.name,
+      student.phone,
+      student.class,
+      student.group,
+      student.status,
+      formatDate(student.date)
+    ]);
+
+    // Add header and footer to all pages
+    doc.autoTable({
+      head: headers,
+      body: data,
+      startY: posY + 12,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+        overflow: 'linebreak',
+        valign: 'middle'
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 15, halign: 'center' },
+        4: { cellWidth: 20, halign: 'center' },
+        5: { cellWidth: 25 },
+        6: { cellWidth: 25, halign: 'center' }
+      },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === 5) {
+          const status = data.cell.raw;
+          const config = statusConfigs[status] || statusConfigs["Not Checked"];
+          const rgb = hexToRgb(config.pdfColor || '#000000');
+          data.cell.styles.textColor = rgb;
+        }
+      },
+      margin: { top: posY + 12 },
+      didDrawPage: function (data) {
+        // Header for pages after the first
+        if (data.pageNumber > 1) {
           doc.setFontSize(18);
           doc.setTextColor(40);
           doc.text('Admission Tracker Pro - Student Report', 105, 20, { align: 'center' });
@@ -798,115 +933,34 @@
           doc.setFontSize(10);
           doc.text(`Generated on: ${new Date().toLocaleDateString()} Developed by Mustafa Rahman`, 105, 27, { align: 'center' });
           doc.text(`Total Students: ${filteredStudents.length}`, 105, 32, { align: 'center' });
-          
-
-          // Statistics section
-          const stats = [
-            { label: "Called", value: filteredStudents.filter(s => s.status === 'Called').length },
-            { label: "Follow-Up", value: filteredStudents.filter(s => s.status === 'Follow-Up Needed').length },
-            { label: "Agreed", value: filteredStudents.filter(s => s.status === 'Agreed').length },
-            { label: "Paid", value: filteredStudents.filter(s => s.status === 'Paid').length },
-            { label: "Not Interested", value: filteredStudents.filter(s => s.status === 'Not Interested').length },
-            { label: "Not Checked", value: filteredStudents.filter(s => s.status === 'Not Checked').length }
-          ];
-
-          let startX = 15;
-          let posX = startX;
-          let posY = 43;
-          doc.setFontSize(10);
-
-          stats.forEach(stat => {
-            const config = statusConfigs[stat.label] || statusConfigs["Not Checked"];
-            const text = `${stat.label}: ${stat.value}`;
-            const textWidth = doc.getTextWidth(text) + 6;
-
-            if (posX + textWidth > 190) {
-              posX = startX;
-              posY += 10;
-            }
-
-            const rgb = hexToRgb(config.pdfColor || '#cccccc');
-            doc.setFillColor(...rgb);
-            doc.setTextColor(255);
-            doc.roundedRect(posX, posY, textWidth, 8, 2, 2, 'F');
-            doc.text(text, posX + 3, posY + 5.5);
-
-            posX += textWidth + 4;
-          });
-
-          // Table data - using filteredStudents instead of all students
-          const headers = [['Sl No', 'Name', 'Phone', 'Class', 'Group', 'Status', 'Date']];
-          const data = filteredStudents.map((student, index) => [
-            index + 1,
-            student.name.length > 20 ? student.name.substring(0, 17) + '...' : student.name,
-            student.phone,
-            student.class,
-            student.group,
-            student.status,
-            formatDate(student.date)
-          ]);
-
-          doc.autoTable({
-            head: headers,
-            body: data,
-            startY: posY + 12,
-            theme: 'grid',
-            headStyles: {
-              fillColor: [41, 128, 185],
-              textColor: 255,
-              fontStyle: 'bold',
-              halign: 'center'
-            },
-            alternateRowStyles: {
-              fillColor: [245, 245, 245]
-            },
-            styles: {
-              fontSize: 8,
-              cellPadding: 2,
-              overflow: 'linebreak',
-              valign: 'middle'
-            },
-            columnStyles: {
-              0: { cellWidth: 10, halign: 'center' },
-              1: { cellWidth: 40 },
-              2: { cellWidth: 25 },
-              3: { cellWidth: 15, halign: 'center' },
-              4: { cellWidth: 20, halign: 'center' },
-              5: { cellWidth: 25 },
-              6: { cellWidth: 25, halign: 'center' }
-            },
-            didParseCell: (data) => {
-              if (data.section === 'body' && data.column.index === 5) {
-                const status = data.cell.raw;
-                const config = statusConfigs[status] || statusConfigs["Not Checked"];
-                const rgb = hexToRgb(config.pdfColor || '#000000');
-                data.cell.styles.textColor = rgb;
-              }
-            },
-            margin: { top: posY + 12 }
-          });
-
-          // Footer page numbering
-          const pageCount = doc.internal.getNumberOfPages();
-          for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`Page ${i} of ${pageCount}`, 105, doc.internal.pageSize.height - 10, { align: 'center' });
-          }
-
-          // Save
-          doc.save(`students_report_${new Date().toISOString().slice(0, 10)}.pdf`);
-          showToast('PDF exported successfully!', 'success');
-        } catch (error) {
-          console.error('Error exporting PDF:', error);
-          showToast('Failed to export PDF', 'error');
-        } finally {
-          hideLoading();
         }
-      };
 
-      const backupToJSON = () => {
+        // Footer for all pages
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const footerText = `Developed by Mustafa Rahman -Software Engineer, Contact: 01840643946 | by Admission Tracker Pro software`;
+        doc.text(footerText, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+        
+        // Page numbering
+        const pageCount = doc.internal.getNumberOfPages();
+        doc.text(`Page ${data.pageNumber} of ${pageCount}`, 105, doc.internal.pageSize.height - 15, { align: 'center' });
+      }
+    });
+
+    // Save
+    doc.save(`students_report_${new Date().toISOString().slice(0, 10)}.pdf`);
+    showToast('PDF exported successfully!', 'success');
+  } catch (error) {
+    console.error('Error exporting PDF:', error);
+    showToast('Failed to export PDF', 'error');
+  } finally {
+    hideLoading();
+  }
+};
+      
+
+
+const backupToJSON = () => {
         showLoading();
         try {
           const dataStr = JSON.stringify(students, null, 2);
@@ -1007,7 +1061,7 @@
           try {
             const csvData = event.target.result;
             const lines = csvData.split('\n');
-            
+
             // Parse headers and find column indices
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
             const nameIndex = headers.findIndex(h => h.toLowerCase() === 'name');
@@ -1031,10 +1085,10 @@
               try {
                 // Use a proper CSV parser for the line
                 const values = parseCSVLine(lines[i]);
-                
+
                 // Skip if required fields are missing
                 if (!values[nameIndex] || !values[phoneIndex] || !values[classIndex]) {
-                  errors.push(`Skipping row ${i+1}: Missing required fields`);
+                  errors.push(`Skipping row ${i + 1}: Missing required fields`);
                   continue;
                 }
 
@@ -1043,16 +1097,16 @@
                   phone: values[phoneIndex].trim(),
                   class: values[classIndex].trim(),
                   group: (groupIndex !== -1 && values[groupIndex]) ? values[groupIndex].trim() : 'None',
-                  date: (dateIndex !== -1 && values[dateIndex]) ? 
-                    values[dateIndex].trim() : 
+                  date: (dateIndex !== -1 && values[dateIndex]) ?
+                    values[dateIndex].trim() :
                     new Date().toISOString().split('T')[0],
-                  status: (statusIndex !== -1 && values[statusIndex]) ? 
-                    values[statusIndex].trim() : 
+                  status: (statusIndex !== -1 && values[statusIndex]) ?
+                    values[statusIndex].trim() :
                     'Not Checked',
                   info: (infoIndex !== -1 && values[infoIndex]) ? values[infoIndex].trim() : ''
                 });
               } catch (error) {
-                errors.push(`Error parsing row ${i+1}: ${error.message}`);
+                errors.push(`Error parsing row ${i + 1}: ${error.message}`);
               }
             }
 
@@ -1066,7 +1120,7 @@
 
             showConfirmation(
               'Import CSV',
-              `This will import ${newStudents.length} student records${errors.length > 0 ? 
+              `This will import ${newStudents.length} student records${errors.length > 0 ?
                 ` (${errors.length} rows had issues)` : ''}. Continue?`,
               'importCSV',
               newStudents
@@ -1223,6 +1277,7 @@
         dashboardElements.followup.textContent = filteredStudents.filter(s => s.status === 'Follow-Up Needed').length;
         dashboardElements.agreed.textContent = filteredStudents.filter(s => s.status === 'Agreed').length;
         dashboardElements.none.textContent = filteredStudents.filter(s => s.status === 'Not Interested').length;
+        dashboardElements.NeedPhoneNumber.textContent = filteredStudents.filter(s => s.status === 'Need Phone-Number').length;
         dashboardElements.paid.textContent = filteredStudents.filter(s => s.status === 'Paid').length;
       };
 
@@ -1265,7 +1320,7 @@
         statusChart = new Chart(statusCtx, {
           type: 'doughnut',
           data: {
-            labels: ['Not Checked', 'Called', 'Follow-Up Needed', 'Agreed', 'Paid', 'Not Interested'],
+            labels: ['Not Checked', 'Called', 'Follow-Up Needed', 'Agreed', 'Paid', 'Not Interested', 'Need Phone-Number'],
             datasets: [{
               data: [0, 0, 0, 0, 0, 0],
               backgroundColor: [
@@ -1274,7 +1329,8 @@
                 '#eab308',
                 '#3b82f6',
                 '#10b981',
-                '#ef4444'
+                '#ef4444',
+                "#4d4d4d"
               ],
               borderWidth: 1
             }]
@@ -1334,7 +1390,8 @@
           filteredStudents.filter(s => s.status === 'Follow-Up Needed').length,
           filteredStudents.filter(s => s.status === 'Agreed').length,
           filteredStudents.filter(s => s.status === 'Paid').length,
-          filteredStudents.filter(s => s.status === 'Not Interested').length
+          filteredStudents.filter(s => s.status === 'Not Interested').length,
+          filteredStudents.filter(s => s.status === 'Need Phone-Number').length
         ];
         statusChart.data.datasets[0].data = statusCounts;
         statusChart.update();
@@ -1576,7 +1633,7 @@
 
     <script>
       // Auto year update
-      document.getElementById("year").textContent = new Date().getFullYear();
+      document.getElementById("year").textContent = new Date().getFullYear()
     </script>
   </footer>
 

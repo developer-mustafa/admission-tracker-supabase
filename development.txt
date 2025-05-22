@@ -1,386 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admission Tracker Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
-  </script>
-
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
-    body {
-      font-family: "Hind Siliguri", sans-serif;
-    }
-
-    /* Custom focus style for better accessibility and appearance */
-    .custom-focus:focus {
-      outline: none;
-      ring-width: 2px; /* Tailwind's ring-2 */
-      ring-color: #3b82f6; /* Tailwind's blue-500 */
-      ring-opacity: 0.5;
-    }
-
-    /* Scrollbar styling for a more modern look (optional) */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    .dark ::-webkit-scrollbar-track {
-      background: #2d3748; /* gray-800 */
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 10px;
-    }
-    .dark ::-webkit-scrollbar-thumb {
-      background: #4a5568; /* gray-600 */
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-    .dark ::-webkit-scrollbar-thumb:hover {
-      background: #718096; /* gray-500 */
-    }
-  </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- 3-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script> <!-- 3-->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- 3-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- 3-->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <!-- 3-->
-</head>
-
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-500">
-  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] hidden">
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl flex items-center space-x-4">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
-      <span class="text-lg font-medium">Processing...</span> <!-- 4-->
-    </div>
-  </div>
-
-  <header
-    class="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 text-gray-900 dark:text-white shadow-lg sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700">
-    <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
-
-      <div class="flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-yellow-500 dark:text-yellow-400 drop-shadow" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
-          </svg>
-          <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500 drop-shadow">
-            Admission Tracker Pro
-          </h1>
-        </div>
-
-        <a href="https://wa.me/+8801840643946" target="_blank" class="group relative inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 dark:from-yellow-400 dark:to-orange-500 text-white text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
-          <span class="absolute inset-0 bg-gradient-to-r from-sky-600 to-indigo-700 dark:from-yellow-500 dark:to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span> <!-- 7-->
-          <span class="relative z-10 flex items-center gap-1.5">
-            <span class="text-xs">👨‍💻</span>
-            <span>Mustafa Rahman</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5 opacity-70 group-hover:translate-x-0.5 group-hover:opacity-100 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <!-- 8-->
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </span>
-        </a>
-      </div>
-
-      <div class="w-full md:max-w-md lg:max-w-xl xl:max-w-2xl bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-red-400 rounded-lg p-3 shadow-lg animate-pulse"> <!-- 9-->
-        <div class="flex items-center justify-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm sm:text-base">
-          <span class="text-center">⚠️ এটি রিয়েল সেন্সসিটিভ ডাটাবেজ ভিত্তিক সফটওয়্যার — তথ্য ডিলেট করা থেকে বিরত থাকুন</span>
-        </div>
-      </div>
-
-      <div class="flex flex-row items-center justify-center gap-3 w-full md:w-auto"> <!-- 10-->
-        <button id="openStudentPanel" class="relative overflow-hidden flex items-center gap-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white px-5 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98--> font-medium custom-focus">
-          <span class="absolute inset-0 bg-gradient-to-r from-white/20 via-white/0 to-white/20 opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full"></span> <!-- 11-->
-          <span class="relative z-10 flex items-center gap-2">
-            <i class="fas fa-plus text-sm transition-transform hover:scale-110"></i>
-            <span class="text-sm tracking-wide">Add Student</span>
-          </span>
-          <span class="absolute inset-0 rounded-lg opacity-0 active:opacity-100 active:bg-white/20 transition-opacity duration-300"></span> <!-- 12-->
-        </button>
-
-        <div id="darkModeToggle" class="w-16 h-9 flex items-center bg-gray-200 dark:bg-gray-600 rounded-full p-1 cursor-pointer transition-all duration-300 shadow-inner custom-focus" tabindex="0" aria-label="Toggle dark mode">
-          <div id="toggleThumb" class="bg-white dark:bg-yellow-400 w-7 h-7 rounded-full shadow-md transform transition-all duration-300 flex items-center justify-center"> <!-- 13-->
-            <span id="toggleIcon" class="text-sm">🌙</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="container mx-auto px-4 py-6 space-y-8">
-    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"> <!-- 14-->
-        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full mr-4">
-          <i class="fas fa-users text-blue-600 dark:text-blue-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total</h3>
-          <p id="totalStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"> <!-- 15-->
-        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full mr-4">
-          <i class="fas fa-phone text-purple-600 dark:text-purple-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Called</h3>
-          <p id="calledStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"> <!-- 16-->
-        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-4">
-          <i class="fas fa-exclamation-circle text-yellow-600 dark:text-yellow-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Follow-Up</h3>
-          <p id="followupStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"> <!-- 17-->
-        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full mr-4">
-          <i class="fas fa-handshake text-green-600 dark:text-green-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Agreed</h3>
-          <p id="agreedStudents" class="text-2xl font-bold">0</p> <!-- 18-->
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"> <!-- 18-->
-        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full mr-4">
-          <i class="fas fa-ban text-red-600 dark:text-red-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Not Interested</h3>
-          <p id="noneStudents" class="text-2xl font-bold">0</p> <!-- 19-->
-        </div>
-      </div>
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex items-center border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg"> <!-- 19-->
-        <div class="p-3 bg-emerald-100 dark:bg-emerald-900 rounded-full mr-4">
-          <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-300 text-xl"></i>
-        </div>
-        <div>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Paid</h3> <!-- 20-->
-          <p id="paidStudents" class="text-2xl font-bold">0</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="filterSection" class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-200 dark:border-gray-700 md:sticky md:top-[calc(var(--header-height,80px)+1rem)--> z-40">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <input id="searchInput" type="text" placeholder="Search by name, phone, info..." class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 md:col-span-1 lg:col-span-1 w-full" aria-label="Search students"> <!-- 21-->
-        <select id="statusFilter" class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Filter by status"> <!-- 21-->
-          <option value="">All Statuses</option>
-          <option value="Not Checked">Not Checked</option>
-          <option value="Called">Called</option>
-          <option value="Follow-Up Needed">Follow-Up Needed</option>
-          <option value="Agreed">Agreed</option>
-          <option value="Paid">Paid</option> <!-- 22-->
-          <option value="Not Interested">Not Interested</option>
-        </select>
-        <select id="classFilter" class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Filter by class"> <!-- 22-->
-          <option value="">All Classes</option>
-          <option value="6">Class 6</option>
-          <option value="7">Class 7</option>
-          <option value="8">Class 8</option>
-          <option value="9">Class 9</option> <!-- 23-->
-          <option value="10">Class 10</option>
-          <option value="11">Class 11</option>
-          <option value="12">Class 12</option>
-        </select>
-        <select id="groupFilter" class="p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 w-full" aria-label="Filter by group"> <!-- 23-->
-          <option value="">All Groups</option>
-          <option value="General">General</option> <!-- 24-->
-          <option value="Science">Science</option>
-          <option value="Arts">Arts</option>
-          <option value="Commerce">Commerce</option>
-        </select>
-      </div>
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span id="showingCount" class="font-semibold">0</span> of <span id="totalCount" class="font-semibold">0</span> students
-        </div>
-        <div class="flex space-x-2"> <!-- 25-->
-          <button id="prevPage" class="px-4 py-2 border rounded-md disabled:opacity-50 custom-focus hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Previous page">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <span id="pageInfo" class="px-4 py-2 text-sm">Page 1 of 1</span>
-          <button id="nextPage" class="px-4 py-2 border rounded-md disabled:opacity-50 custom-focus hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Next page">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700 min-h-[300px-->">
-      <div id="studentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div id="initialLoadingMessage" class="col-span-full text-center py-10">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p class="text-gray-500 dark:text-gray-400">Loading students...</p> <!-- 27-->
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Admission Analytics</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Students by Class</h3>
-          <div class="h-[300px] w-full"> <!-- 28-->
-            <canvas id="classChart"></canvas>
-          </div>
-        </div>
-        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Students by Status</h3>
-          <div class="h-[300px] w-full">
-            <canvas id="statusChart"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Admission Progress Over Time</h3>
-        <div class="h-[300px] w-full">
-          <canvas id="progressChart"></canvas>
-        </div>
-      </div>
-       <div class="mt-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Conversion Rates (Placeholder)</h3>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">Graphs showing Called to Agreed, Agreed to Paid, etc., will be displayed here.</p>
-        </div>
-    </section>
-
-    <section class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-200 dark:border-gray-700">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">Data Management</h2> <!-- 30-->
-        </div>
-      <div class="flex flex-wrap gap-3">
-        <button id="exportCSV" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition flex items-center gap-2 custom-focus">
-          <i class="fas fa-file-csv"></i> Export CSV
-        </button>
-        <button id="exportPDF" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition flex items-center gap-2 custom-focus">
-          <i class="fas fa-file-pdf"></i> Export PDF <!-- 31-->
-        </button>
-        <label for="importCSV" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition flex items-center gap-2 cursor-pointer custom-focus">
-          <i class="fas fa-file-import"></i> Import CSV
-          <input type="file" id="importCSV" accept=".csv, text/csv" class="hidden">
-        </label>
-        <button id="backupJSON" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition flex items-center gap-2 custom-focus"> <!-- 32-->
-          <i class="fas fa-file-export"></i> Backup JSON
-        </button>
-        <label for="restoreJSON" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition flex items-center gap-2 cursor-pointer custom-focus">
-          <i class="fas fa-file-import"></i> Restore JSON
-          <input type="file" id="restoreJSON" accept=".json,application/json" class="hidden">
-        </label>
-      </div>
-      </section>
-  </main>
-
-  <div id="studentPanelModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] hidden p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-3xl mx-auto border border-gray-200 dark:border-gray-700 shadow-2xl max-h-[90vh--> flex flex-col">
-      <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 rounded-t-xl">
-        <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 dark:text-white">Add Student</h2>
-        <button id="closeStudentPanel" class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 text-2xl custom-focus" aria-label="Close panel">
-          <i class="fas fa-times"></i> <!-- 34-->
-        </button>
-      </div>
-      <form id="studentForm" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 p-6 overflow-y-auto">
-        <div class="col-span-2 sm:col-span-1">
-          <label for="name" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Name*</label>
-          <input type="text" id="name" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"> <!-- 35-->
-        </div>
-
-        <div class="col-span-2 sm:col-span-1">
-          <label for="phone" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Phone*</label>
-          <input type="tel" id="phone" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true">
-        </div>
-
-        <div class="col-span-2 sm:col-span-1"> <!-- 36-->
-          <label for="class" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Class*</label>
-          <select id="class" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true">
-            <option value="">Select Class</option>
-            <option value="6">Class 6</option>
-            <option value="7">Class 7</option>
-            <option value="8">Class 8</option> <!-- 37-->
-            <option value="9">Class 9</option>
-            <option value="10">Class 10</option>
-            <option value="11">Class 11</option>
-            <option value="12">Class 12</option>
-          </select>
-        </div>
-
-        <div class="col-span-2 sm:col-span-1"> <!-- 38-->
-          <label for="group" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Group</label>
-          <select id="group" class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="None">None</option>
-            <option value="General">General</option>
-            <option value="Science">Science</option>
-            <option value="Arts">Arts</option> <!-- 39-->
-            <option value="Commerce">Commerce</option>
-          </select>
-        </div>
-
-        <div class="col-span-2 sm:col-span-1">
-          <label for="date" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Date*</label>
-          <input type="date" id="date" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true"> <!-- 40-->
-        </div>
-
-        <div class="col-span-2 sm:col-span-1">
-          <label for="status" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Status*</label>
-          <select id="status" required class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white" aria-required="true">
-            <option value="Not Checked">Not Checked</option>
-            <option value="Called">Called</option> <!-- 41-->
-            <option value="Follow-Up Needed">Follow-Up Needed</option>
-            <option value="Agreed">Agreed</option>
-            <option value="Paid">Paid</option>
-            <option value="Not Interested">Not Interested</option>
-          </select>
-        </div>
-
-        <div class="col-span-2"> <!-- 42-->
-          <label for="info" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Additional Info</label>
-          <textarea id="info" rows="3" class="w-full p-3 border rounded-md custom-focus dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-        </div>
-        
-        <div class="col-span-2 mt-2">
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition flex items-center justify-center gap-2 text-lg custom-focus"> <!-- 43-->
-            <i class="fas fa-save"></i> <span id="saveButtonText">Save Student</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[70] hidden p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-auto border border-gray-200 dark:border-gray-700 shadow-2xl">
-      <h2 id="confirmModalTitle" class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Confirm Action</h2> <!-- 44-->
-      <p id="confirmModalMessage" class="mb-6 text-gray-600 dark:text-gray-300">Are you sure you want to perform this action?</p>
-      <div class="flex justify-end gap-4">
-        <button id="cancelConfirm" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md transition custom-focus dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500">
-          Cancel
-        </button>
-        <button id="proceedConfirm" class="px-4 py-2 text-white rounded-md transition custom-focus">
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toastContainer" class="fixed bottom-4 right-4 z-[100] space-y-2"></div>
-
-
-
-
-  
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // ================ INITIALIZATION ================
@@ -646,8 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       students = data || []; //[cite:81]
       applyFiltersAndRender();
-      updateDashboard(); // Called by applyFiltersAndRender
-      updateCharts(); // Called by applyFiltersAndRender
+      // updateDashboard(); // Called by applyFiltersAndRender
+      // updateCharts(); // Called by applyFiltersAndRender
       localStorage.setItem('admissionTrackerData', JSON.stringify(students)); // Cache data
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -656,8 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (localData) { //[cite:82]
         students = JSON.parse(localData); //[cite:82]
         applyFiltersAndRender();
-        updateDashboard();
-        updateCharts();
+        // updateDashboard();
+        // updateCharts();
       } else {
         studentList.innerHTML = `<div class="col-span-full text-center py-10"><i class="fas fa-exclamation-triangle text-3xl text-red-500 mb-3"></i><p class="text-red-500 dark:text-red-400">Could not fetch students and no local data found.</p></div>`;
       }
@@ -712,8 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
         students.unshift(result); //[cite:93]
       }
       applyFiltersAndRender(); // This will update UI, dashboard, charts
-      updateDashboard();
-      updateCharts();
+      // updateDashboard();
+      // updateCharts();
       return true; //[cite:94]
     } catch (error) {
       console.error('Error saving student:', error); //[cite:95]
@@ -734,10 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (error) throw error; //[cite:99]
 
       // No need to manually update local 'students' array if Supabase real-time is active
-      students = students.filter(student => student.id !== id);
-      applyFiltersAndRender();
-      updateDashboard();
-      updateCharts();
+      // students = students.filter(student => student.id !== id);
+      // applyFiltersAndRender();
+      // updateDashboard();
+      // updateCharts();
       showToast('Student deleted successfully!', 'success'); //[cite:100]
       return true;
     } catch (error) {
@@ -1149,9 +767,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 const renderStudents = () => {
-   const paginatedStudents = filteredStudents.slice(startIndex, endIndex); //[cite:190]
     const startIndex = (currentPage - 1) * studentsPerPage; //[cite:189]
     const endIndex = startIndex + studentsPerPage; //[cite:190]
+    const paginatedStudents = filteredStudents.slice(startIndex, endIndex); //[cite:190]
 
     studentList.innerHTML = ''; // Clear current list //[cite:190]
 
@@ -1241,7 +859,7 @@ const renderStudents = () => {
         studentList.appendChild(card);
     });
 
-    updatePaginationControls(paginatedStudents);
+    updatePaginationControls();
   }; //[cite:197]
 
 
@@ -1624,49 +1242,3 @@ const renderStudents = () => {
   fetchStudents(); // Then fetch data //[cite:241]
 });
 </script>
-
-  <footer class="bg-white/30 dark:bg-gray-900/30 backdrop-blur-lg text-gray-800 dark:text-white mt-10 shadow-inner border-t border-gray-200 dark:border-gray-700">
-    <div class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-      <div class="flex flex-col items-center md:items-start gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-400 dark:text-yellow-300" fill="currentColor" viewBox="0 0 24 24"> <!-- 248-->
-          <path d="M12 2L1 7l11 5 9-4.09v6.18L12 22 3 13.18V7L12 2z" />
-        </svg>
-        <h2 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 dark:from-yellow-300 dark:via-orange-400 dark:to-red-500">
-          Admission Tracker Pro
-        </h2> <!-- 249-->
-        <p class="text-sm opacity-80">Streamlining your admission management process.</p>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <h3 class="text-lg font-bold mb-2">Quick Links</h3> <!-- 250-->
-        <a href="#filterSection" class="hover:underline hover:text-blue-500 dark:hover:text-yellow-400 transition-colors">Dashboard</a>
-        <button onclick="document.getElementById('openStudentPanel').click()" class="text-left hover:underline hover:text-blue-500 dark:hover:text-yellow-400 transition-colors">Add Student</button>
-      </div>
-
-      <div class="flex flex-col items-center md:items-end gap-3">
-        <h3 class="text-lg font-bold">Connect</h3>
-        <div class="flex gap-4 text-xl">
-          <a href="https://wa.me/+8801840643946" target="_blank" class="hover:text-green-500 transition-colors" aria-label="WhatsApp">
-            <i class="fab fa-whatsapp"></i> <!-- 251-->
-          </a>
-          <a href="mailto:mustafa.rahman@example.com" class="hover:text-red-500 transition-colors" aria-label="Email"> <i class="fas fa-envelope"></i> <!-- 251-->
-          </a>
-          <a href="https://mustafaofficial.netlify.app" target="_blank" class="hover:text-blue-600 transition-colors" aria-label="Facebook"> <i class="fab fa-facebook"></i> <!-- 251-->
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-center py-4 border-t border-gray-300 dark:border-gray-700 text-sm">
-      &copy; <span id="year"></span> Admission Tracker Pro — Crafted with ❤️ by
-      <a href="https://wa.me/+8801840643946" class="text-blue-600 dark:text-yellow-400 font-semibold hover:underline" target="_blank">Mustafa Rahman</a> <!-- 253-->
-    </div>
-
-    <script>
-      // Auto year update
-      document.getElementById("year").textContent = new Date().getFullYear(); <!-- 253-->
-    </script>
-  </footer>
-
-</body>
-</html>
